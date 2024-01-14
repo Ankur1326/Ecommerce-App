@@ -2,7 +2,7 @@ import { Image, KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Pressab
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import React, { useState } from 'react'
-import {useNavigation} from "@react-navigation/native"
+import { useNavigation } from "@react-navigation/native"
 import { FontAwesome5 } from '@expo/vector-icons';
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -13,10 +13,10 @@ const RegisterScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   const navigation = useNavigation();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const user = {
       name: name,
       email: email,
@@ -24,29 +24,42 @@ const RegisterScreen = () => {
     };
 
     console.log("User : ", user);
-    
+
     // send a POST  request to the backend API to register the user
-    axios
-      .post("http://10.0.2.2:8000/register", user)
-      .then((response) => {
-        console.log("response : ", response);
-        console.log("response data : ", response.data);
+    try {
+      const response = await axios.post("http://10.0.2.2:8000/register", user)
+      console.log("response : ", response);
+
+      if (response.status == 200 || response.status == 201) {
         Alert.alert(
           "Registration successful",
-          "You have been registered Successfully"
-        );
-        // setName("");
-        // setEmail("");
-        // setPassword("");
-      })
-      .catch((error) => {
-        console.log("error : ", error),
+          response.data.message
+        )
+        setName("")
+        setEmail("")
+        setPassword("")
+      } else {
         Alert.alert(
           "Registration Error",
-          "An error occurred while registering"
+          "An unexpected error occurred while registering. Please try again later."
         );
-        console.log("registration failed", error);
-      });
+        console.log("Unexpected response status:", response.status);
+      }
+
+    } catch (error) {
+      console.log("Error during registration :", error.message);
+
+      if (error.response.status == 400 || error.response.status == 409) {
+        console.log("error.response.data.message : ", error.response.data.message);
+        Alert.alert(
+          "Registration Error",
+          error.response.data.message
+        )
+
+      }
+
+    }
+
   };
 
   return (
@@ -81,8 +94,8 @@ const RegisterScreen = () => {
               gap: 5,
             }}
           >
-            
-            <FontAwesome5 name="user-alt" size={24} color="black" style={{color: "gray", fontSize: 20, marginLeft: 9}} />
+
+            <FontAwesome5 name="user-alt" size={24} color="black" style={{ color: "gray", fontSize: 20, marginLeft: 9 }} />
             <TextInput
               placeholder="enter your name"
               value={{ name }}
