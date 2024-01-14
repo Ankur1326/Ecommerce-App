@@ -9,7 +9,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import axios from 'axios';
 
-
 const RegisterScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,6 +30,7 @@ const RegisterScreen = () => {
       .post("http://10.0.2.2:8000/register", user)
       .then((response) => {
         console.log("response : ", response);
+        console.log("response data : ", response.data);
         Alert.alert(
           "Registration successful",
           "You have been registered Successfully"
