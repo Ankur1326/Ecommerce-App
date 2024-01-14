@@ -1,4 +1,4 @@
-import { Image, KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Pressable } from 'react-native'
+import { Image, KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Pressable, Alert } from 'react-native'
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import React, { useState } from 'react'
@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import axios from 'axios';
 
 
 const RegisterScreen = () => {
@@ -15,6 +16,38 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   
   const navigation = useNavigation();
+
+  const handleRegister = () => {
+    const user = {
+      name: name,
+      email: email,
+      password: password,
+    };
+
+    console.log("User : ", user);
+    
+    // send a POST  request to the backend API to register the user
+    axios
+      .post("http://10.0.2.2:8000/register", user)
+      .then((response) => {
+        console.log("response : ", response);
+        Alert.alert(
+          "Registration successful",
+          "You have been registered Successfully"
+        );
+        // setName("");
+        // setEmail("");
+        // setPassword("");
+      })
+      .catch((error) => {
+        console.log("error : ", error),
+        Alert.alert(
+          "Registration Error",
+          "An error occurred while registering"
+        );
+        console.log("registration failed", error);
+      });
+  };
 
   return (
     <SafeAreaView
@@ -135,6 +168,7 @@ const RegisterScreen = () => {
         </View>
 
         <Pressable
+          onPress={handleRegister}
           style={{
             marginTop: 85,
             backgroundColor: "#f7b539",
@@ -149,7 +183,7 @@ const RegisterScreen = () => {
           <Text
             style={{ textAlign: "center", color: "white", fontWeight: 600 }}
           >
-            Login
+            Register
           </Text>
         </Pressable>
         <Pressable style={{ marginTop: 8 }} onPress={() => navigation.goBack()}>
