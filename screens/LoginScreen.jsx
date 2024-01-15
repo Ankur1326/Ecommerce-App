@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   View,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
 
@@ -15,11 +16,50 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 import { useNavigation } from "@react-navigation/native"
+import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const loginHandler = async () => {
+    const user = {
+      email: email,
+      password: password
+    }
+
+    try {
+      const response = await axios.post("http://10.0.2.2:8000/login", user)
+
+      if (response.status == 201 || response.status == 200) {
+        // navigation.replace("Home")
+
+        await AsyncStorage.setItem("authToken", response.data.secretKey)
+        navigation.navigate("Home")
+        console.log("response.data.secretKey : ", response.data.secretKey);
+        
+      } else {
+        Alert.alert(
+          "Login Error",
+          "An unexpected error occurred while Login. Please try again later."
+        );
+        console.log("Unexpected response status:", response.status);
+      }
+
+    } catch (error) {
+      console.log("Error during login user :", error.message);
+
+      if (error.response.status == 400 || error.response.status == 409 || error.response.status == 404) {
+        console.log("error.response.data.message : ", error.response.data.message);
+        Alert.alert(
+          "Login Error",
+          error.response.data.message
+        )
+      }
+    }
+  }
 
   return (
     <SafeAreaView
@@ -46,11 +86,13 @@ const LoginScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               backgroundColor: "#D0D0D0",
-              paddingVertical: 7,
+              paddingVertical: 6,
               paddingHorizontal: 5,
-              width: 300,
+              width: 350,
               borderRadius: 5,
               gap: 5,
+              marginLeft: 10,
+              marginRight: 10
             }}
           >
             <MaterialIcons
@@ -63,7 +105,7 @@ const LoginScreen = () => {
               placeholder="enter your Email"
               value={{ email }}
               onChangeText={(text) => setEmail(text)}
-              style={{ fontSize: 16 }}
+              style={{ fontSize: 18, marginVertical: 7 }}
               color="gray"
             />
           </View>
@@ -73,12 +115,14 @@ const LoginScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               backgroundColor: "#D0D0D0",
-              paddingVertical: 7,
+              paddingVertical: 6,
               paddingHorizontal: 5,
-              width: 300,
+              width: 350,
               borderRadius: 5,
               gap: 5,
               marginTop: 25,
+              marginLeft: 10,
+              marginRight: 10
             }}
           >
             <AntDesign
@@ -89,14 +133,15 @@ const LoginScreen = () => {
             />
             <TextInput
               placeholder="enter your Password"
-              styles={{
+              style={{
                 color: "gray",
-                marginVertical: 10,
-                fontSize: password ? 16 : 16,
+                marginVertical: 7,
+                fontSize: 18,
               }}
               secureTextEntry={true}
               onChangeText={(text) => setPassword(text)}
               color="gray"
+              value={password}
             />
           </View>
         </View>
@@ -125,6 +170,7 @@ const LoginScreen = () => {
             marginRight: "auto",
             borderRadius: 5,
           }}
+          onPress={loginHandler}
         >
           <Text
             style={{ textAlign: "center", color: "white", fontWeight: 600 }}

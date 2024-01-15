@@ -28,16 +28,16 @@ const RegisterScreen = () => {
     // send a POST  request to the backend API to register the user
     try {
       const response = await axios.post("http://10.0.2.2:8000/register", user)
-      console.log("response : ", response);
+      console.log("response.data.message : ", response.data.message);
 
       if (response.status == 200 || response.status == 201) {
         Alert.alert(
           "Registration successful",
           response.data.message
-        )
-        setName("")
-        setEmail("")
-        setPassword("")
+          )
+          // setName("")
+          // setEmail("")
+          // setPassword("")
       } else {
         Alert.alert(
           "Registration Error",
@@ -55,7 +55,13 @@ const RegisterScreen = () => {
           "Registration Error",
           error.response.data.message
         )
-
+        
+      }
+      if (error.response.status == 500) {
+        Alert.alert(
+          "Server Error 500",
+          error.response.data.message
+        )
       }
 
     }
@@ -75,13 +81,13 @@ const RegisterScreen = () => {
         ></Image>
       </View>
       <KeyboardAvoidingView>
-        <View style={{ marginTop: 25 }}>
+        <View style={{ marginTop: 15 }}>
           <Text style={{ fontSize: 17, fontWeight: 700, textAlign: "center" }}>
             Register to Your Account
           </Text>
         </View>
 
-        <View style={{ marginTop: 70 }}>
+        <View style={{ marginTop: 40 }}>
           <View
             style={{
               flexDirection: "row",
@@ -89,9 +95,12 @@ const RegisterScreen = () => {
               backgroundColor: "#D0D0D0",
               paddingVertical: 7,
               paddingHorizontal: 5,
-              width: 300,
+              width: 350,
               borderRadius: 5,
               gap: 5,
+              marginTop: 25,
+              marginLeft: 10,
+              marginRight: 10
             }}
           >
 
@@ -100,7 +109,7 @@ const RegisterScreen = () => {
               placeholder="enter your name"
               value={{ name }}
               onChangeText={(text) => setName(text)}
-              style={{ fontSize: 16 }}
+              style={{ fontSize: 16, marginVertical: 7 }}
               color="gray"
             />
           </View>
@@ -112,10 +121,12 @@ const RegisterScreen = () => {
               backgroundColor: "#D0D0D0",
               paddingVertical: 7,
               paddingHorizontal: 5,
-              width: 300,
+              width: 350,
               borderRadius: 5,
               gap: 5,
-              marginTop: 25
+              marginTop: 25,
+              marginLeft: 10,
+              marginRight: 10
             }}
           >
             <MaterialIcons
@@ -128,7 +139,7 @@ const RegisterScreen = () => {
               placeholder="enter your Email"
               value={{ email }}
               onChangeText={(text) => setEmail(text)}
-              style={{ fontSize: 16 }}
+              style={{ fontSize: 16, marginVertical: 7 }}
               color="gray"
             />
           </View>
@@ -140,10 +151,12 @@ const RegisterScreen = () => {
               backgroundColor: "#D0D0D0",
               paddingVertical: 7,
               paddingHorizontal: 5,
-              width: 300,
+              width: 350,
               borderRadius: 5,
               gap: 5,
               marginTop: 25,
+              marginLeft: 10,
+              marginRight: 10
             }}
           >
             <AntDesign
@@ -154,10 +167,10 @@ const RegisterScreen = () => {
             />
             <TextInput
               placeholder="enter your Password"
-              styles={{
+              style={{
                 color: "gray",
-                marginVertical: 10,
-                fontSize: password ? 16 : 16,
+                marginVertical: 7,
+                fontSize: password ? 18 : 18,
               }}
               secureTextEntry={true}
               onChangeText={(text) => setPassword(text)}
