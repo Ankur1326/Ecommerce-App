@@ -8,7 +8,7 @@ import {
   View,
   Alert
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,6 +24,25 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken")
+        if (token) {
+          navigation.replace("Main")
+        }
+        
+      } catch (error) {
+        console.log("Error message : ", error);
+      }
+    }
+    checkLoginStatus();
+  }, [])
+
+    
+  
+  
+
   const loginHandler = async () => {
     const user = {
       email: email,
@@ -34,10 +53,10 @@ const LoginScreen = () => {
       const response = await axios.post("http://10.0.2.2:8000/login", user)
 
       if (response.status == 201 || response.status == 200) {
-        // navigation.replace("Home")
-
+        
         await AsyncStorage.setItem("authToken", response.data.secretKey)
-        navigation.navigate("Home")
+        // navigation.navigate("Main")
+        navigation.replace("Main")
         console.log("response.data.secretKey : ", response.data.secretKey);
         
       } else {
