@@ -27,7 +27,8 @@ const RegisterScreen = () => {
 
     // send a POST  request to the backend API to register the user
     try {
-      const response = await axios.post("http://10.0.2.2:8000/register", user)
+      // const response = await axios.post("http://10.0.2.2:8000/register", user) for android studio
+      const response = await axios.post("http://192.168.43.207:8000/register", user)
       console.log("response.data.message : ", response.data.message);
 
       if (response.status == 200 || response.status == 201) {
