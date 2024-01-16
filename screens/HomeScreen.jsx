@@ -12,7 +12,7 @@ import axios from "axios"
 import ProductItem from '../components/ProductItem';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { onChange } from 'deprecated-react-native-prop-types/DeprecatedTextInputPropTypes';
-
+import { useNavigation } from "@react-navigation/native"
 
 
 const HomeScreen = () => {
@@ -201,7 +201,7 @@ const HomeScreen = () => {
     { label: "women's clothing", value: "women's clothing" },
   ])
   const [companyOpen, setCompanyOpen] = useState(true)
-
+  const navigation = useNavigation();
 
 
   useEffect(() => {
@@ -210,7 +210,7 @@ const HomeScreen = () => {
         const response = await axios.get("https://fakestoreapi.com/products")
         setProducts(response.data)
       } catch (error) {
-        console.log("Error is while fetching all products : ",);
+        console.log("Error is while fetching all products : ", error);
       }
     }
     fetchAllProductsData()
@@ -225,7 +225,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, backgroundColor: "white" }} >
       <ScrollView>
-        <View style={{ backgroundColor: "#04decf", paddingHorizontal: 15, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
+        <View style={{ backgroundColor: "#00CED1", paddingHorizontal: 15, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
           <Pressable style={{ backgroundColor: "white", flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8, width: "88%", alignItems: "center", borderRadius: 5 }}>
             {/* icon */}
             <AntDesign name="search1" size={22} color="black" />
@@ -286,7 +286,21 @@ const HomeScreen = () => {
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {offers.map((item, index) => (
-            <Pressable style={{ marginVertical: 10, alignItems: 'center', justifyContent: 'center', }} key={item.id} >
+            <Pressable
+              onPress={() =>
+                navigation.navigate("Info", {
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                  carouselImages: item?.carouselImages,
+                  color: item?.color,
+                  size: item?.size,
+                  oldPrice: item?.oldPrice,
+                  item: item,
+                })
+              }
+              style={{ marginVertical: 10, alignItems: 'center', justifyContent: 'center', }}
+              key={item.id} >
               <Image source={{ uri: item.image }} style={{ width: 150, height: 150, resizeMode: "contain" }} />
 
               <View
