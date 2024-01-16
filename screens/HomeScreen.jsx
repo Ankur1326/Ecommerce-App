@@ -13,6 +13,7 @@ import ProductItem from '../components/ProductItem';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { onChange } from 'deprecated-react-native-prop-types/DeprecatedTextInputPropTypes';
 import { useNavigation } from "@react-navigation/native"
+import { useSelector } from "react-redux"
 
 
 const HomeScreen = () => {
@@ -221,6 +222,9 @@ const HomeScreen = () => {
   }, [])
 
 
+  // const cart = useSelector((state) => state)
+  // console.log("cart : ", cart);
+
 
   return (
     <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, backgroundColor: "white" }} >
@@ -273,7 +277,19 @@ const HomeScreen = () => {
         <Text style={{ marginTop: 8, fontSize: 18, fontWeight: 700, marginLeft: 10 }}>Trending Deals of the week</Text>
         <View style={{ flexDirection: 'row', flexWrap: "wrap", }} >
           {deals.map((item, index) => (
-            <Pressable style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("Info", {
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                  carouselImages: item?.carouselImages,
+                  color: item?.color,
+                  size: item?.size,
+                  oldPrice: item?.oldPrice,
+                  item: item,
+                })}
+             style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
               <Image source={{ uri: item.image }} style={{ width: 180, height: 180, resizeMode: "contain" }} />
             </Pressable>
           ))}
