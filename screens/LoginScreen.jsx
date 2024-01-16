@@ -50,7 +50,8 @@ const LoginScreen = () => {
     }
 
     try {
-      const response = await axios.post("http://10.0.2.2:8000/login", user)
+      // const response = await axios.post("http://10.0.2.2:8000/login", user) // for android studio
+      const response = await axios.post("http://192.168.43.207:8000/login", user) // physical mobile device
 
       if (response.status == 201 || response.status == 200) {
         
