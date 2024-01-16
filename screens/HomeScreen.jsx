@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, Text, View, SafeAreaView, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import { AntDesign } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -7,6 +7,13 @@ import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { SliderBox } from 'react-native-image-slider-box';
+import ViewPropTypes from 'deprecated-react-native-prop-types';
+import axios from "axios"
+import ProductItem from '../components/ProductItem';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { onChange } from 'deprecated-react-native-prop-types/DeprecatedTextInputPropTypes';
+
+
 
 const HomeScreen = () => {
 
@@ -104,7 +111,7 @@ const HomeScreen = () => {
       size: "6 GB RAM 64GB Storage",
     },
     {
-      id: "40",
+      id: "50",
       title:
         "realme narzo N55 (Prime Blue, 4GB+64GB) 33W Segment Fastest Charging | Super High-res 64MP Primary AI Camera",
       oldPrice: 12999,
@@ -119,18 +126,114 @@ const HomeScreen = () => {
     },
   ];
 
+  const offers = [
+    {
+      id: "0",
+      title:
+        "Oppo Enco Air3 Pro True Wireless in Ear Earbuds with Industry First Composite Bamboo Fiber, 49dB ANC, 30H Playtime, 47ms Ultra Low Latency,Fast Charge,BT 5.3 (Green)",
+      offer: "72% off",
+      oldPrice: 7500,
+      price: 4500,
+      image:
+        "https://m.media-amazon.com/images/I/61a2y1FCAJL._AC_UL640_FMwebp_QL65_.jpg",
+      carouselImages: [
+        "https://m.media-amazon.com/images/I/61a2y1FCAJL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/71DOcYgHWFL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/71LhLZGHrlL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/61Rgefy4ndL._SX679_.jpg",
+      ],
+      color: "Green",
+      size: "Normal",
+    },
+    {
+      id: "1",
+      title:
+        "Fastrack Limitless FS1 Pro Smart Watch|1.96 Super AMOLED Arched Display with 410x502 Pixel Resolution|SingleSync BT Calling|NitroFast Charging|110+ Sports Modes|200+ Watchfaces|Upto 7 Days Battery",
+      offer: "40%",
+      oldPrice: 7955,
+      price: 3495,
+      image: "https://m.media-amazon.com/images/I/41mQKmbkVWL._AC_SY400_.jpg",
+      carouselImages: [
+        "https://m.media-amazon.com/images/I/71h2K2OQSIL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/71BlkyWYupL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/71c1tSIZxhL._SX679_.jpg",
+      ],
+      color: "black",
+      size: "Normal",
+    },
+    {
+      id: "2",
+      title: "Aishwariya System On Ear Wireless On Ear Bluetooth Headphones",
+      offer: "40%",
+      oldPrice: 7955,
+      price: 3495,
+      image: "https://m.media-amazon.com/images/I/41t7Wa+kxPL._AC_SY400_.jpg",
+      carouselImages: ["https://m.media-amazon.com/images/I/41t7Wa+kxPL.jpg"],
+      color: "black",
+      size: "Normal",
+    },
+    {
+      id: "3",
+      title:
+        "Fastrack Limitless FS1 Pro Smart Watch|1.96 Super AMOLED Arched Display with 410x502 Pixel Resolution|SingleSync BT Calling|NitroFast Charging|110+ Sports Modes|200+ Watchfaces|Upto 7 Days Battery",
+      offer: "40%",
+      oldPrice: 24999,
+      price: 19999,
+      image: "https://m.media-amazon.com/images/I/71k3gOik46L._AC_SY400_.jpg",
+      carouselImages: [
+        "https://m.media-amazon.com/images/I/41bLD50sZSL._SX300_SY300_QL70_FMwebp_.jpg",
+        "https://m.media-amazon.com/images/I/616pTr2KJEL._SX679_.jpg",
+        "https://m.media-amazon.com/images/I/71wSGO0CwQL._SX679_.jpg",
+      ],
+      color: "Norway Blue",
+      size: "8GB RAM, 128GB Storage",
+    },
+  ];
+
+  const [products, setProducts] = useState([])
+
+  const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState("jewelery")
+  const [items, setItems] = useState([
+    { label: "Men's clothing", value: "men's clothing" },
+    { label: "jewelery", value: "jewelery" },
+    { label: "electronics", value: "electronics" },
+    { label: "women's clothing", value: "women's clothing" },
+  ])
+  const [companyOpen, setCompanyOpen] = useState(true)
+
+
+
+  useEffect(() => {
+    const fetchAllProductsData = async () => {
+      try {
+        const response = await axios.get("https://fakestoreapi.com/products")
+        setProducts(response.data)
+      } catch (error) {
+        console.log("Error is while fetching all products : ",);
+      }
+    }
+    fetchAllProductsData()
+  }, [])
+
+  const onGenderOpen = useCallback(() => {
+    setCompanyOpen(false)
+  }, [])
+
+
+
   return (
-    <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, }} >
+    <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, backgroundColor: "white" }} >
       <ScrollView>
         <View style={{ backgroundColor: "#04decf", paddingHorizontal: 15, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
-          <Pressable style={{ backgroundColor: "white", flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8, width: 350, alignItems: "center", borderRadius: 5 }}>
+          <Pressable style={{ backgroundColor: "white", flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8, width: "88%", alignItems: "center", borderRadius: 5 }}>
             {/* icon */}
             <AntDesign name="search1" size={22} color="black" />
-            <TextInput color="gray" placeholder='Search Amazone.in' style={{ paddingLeft: 10, fontSize: 17 }} />
+            <TextInput color="gray" placeholder='Search Amazone.in' style={{ paddingLeft: 9, fontSize: 16 }} />
           </Pressable>
 
-          <Pressable>
-            <SimpleLineIcons name="microphone" size={32} color="black" />
+          <Pressable style={{ marginRight: 10 }}>
+            <SimpleLineIcons name="microphone" size={28} color="black" />
           </Pressable>
         </View>
 
@@ -167,11 +270,85 @@ const HomeScreen = () => {
           ImageComponentStyle={{ width: "100%" }}
         ></SliderBox>
 
+        <Text style={{ marginTop: 8, fontSize: 18, fontWeight: 700, marginLeft: 10 }}>Trending Deals of the week</Text>
+        <View style={{ flexDirection: 'row', flexWrap: "wrap", }} >
+          {deals.map((item, index) => (
+            <Pressable style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
+              <Image source={{ uri: item.image }} style={{ width: 180, height: 180, resizeMode: "contain" }} />
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={{ height: 1, borderColor: "#D0D0D0", borderWidth: 2, marginTop: 15 }} />
+
+        <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
+          Today's Deals
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {offers.map((item, index) => (
+            <Pressable style={{ marginVertical: 10, alignItems: 'center', justifyContent: 'center', }} key={item.id} >
+              <Image source={{ uri: item.image }} style={{ width: 150, height: 150, resizeMode: "contain" }} />
+
+              <View
+                style={{
+                  backgroundColor: "#E31837",
+                  paddingVertical: 5,
+                  width: 130,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 10,
+                  borderRadius: 4,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontSize: 13,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Upto {item?.offer}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        <Text style={{ height: 1, borderColor: "#D0D0D0", borderWidth: 2, marginTop: 15 }} />
 
 
+        <View style={{ marginHorizontal: 10, width: "40%", marginBottom: open ? 50 : 15, marginTop: 15 }} >
+          <DropDownPicker
+            style={{
+              borderColor: "#B7B7B7",
+              height: 30,
+              marginBottom: open ? 120 : 15,
+            }}
+            open={open}
+            value={category} //genderValue
+            items={items}
+            setOpen={setOpen}
+            setValue={setCategory}
+            setItems={setItems}
+            placeholder="choose category"
+            placeholderStyle={styles.placeholderStyles}
+            onOpen={onGenderOpen}
+            // onChangeValue={onChange}
+            zIndex={3000}
+            zIndexInverse={1000}
+          />
+        </View>
 
 
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }} >
+          {products?.filter((item) => item.category == category)
+            .map((item, index) => (<ProductItem item={item} key={index} />
+            ))}
+          {/* {products } */}
+        </View>
       </ScrollView>
+
 
     </SafeAreaView>
   )
