@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, ScrollView, TextInput, Dimensions, ImageBackground } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { AntDesign } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native"
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux"
+import { addToCart } from '../redux/CartReducer';
 
 const ProductInfoScreen = () => {
     const route = useRoute()
@@ -14,6 +16,19 @@ const ProductInfoScreen = () => {
     const navigation = useNavigation();
     const height = (width * 100) / 100
 
+    const [addedToCart, setAddedToCart] = useState(false)
+    const dispatch = useDispatch()
+
+    const addItemToCart = (item) => {
+        setAddedToCart(true)
+        dispatch(addToCart(item))
+        setTimeout(() => {
+            setAddedToCart(false)
+        }, 2000);
+    }
+
+    const cart = useSelector((state) => state.cart.cart)
+    console.log(cart);
 
     return (
         <SafeAreaView>
@@ -87,8 +102,13 @@ const ProductInfoScreen = () => {
 
                 <Text style={{ color: "green", marginHorizontal: 10, fontWeight: "500" }}>IN Stock</Text>
 
-                <Pressable style={{ backgroundColor: "#FFC72C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginHorizontal: 10, marginVertical: 10, }}>
-                    <Text>Add to Cart</Text>
+                <Pressable onPress={() => addItemToCart(route.params?.item)} style={{ backgroundColor: "#FFC72C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginHorizontal: 10, marginVertical: 10, }}>
+                    {addedToCart ? (
+                        <View>
+                            <Text>Added to Cart</Text>
+                        </View> 
+                    ) : (<Text>Add to Cart</Text>)}
+
                 </Pressable>
 
                 <Pressable style={{ backgroundColor: "#FFAC1C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginHorizontal: 10, marginVertical: 10, }}>
