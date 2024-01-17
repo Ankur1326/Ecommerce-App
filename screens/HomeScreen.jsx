@@ -1,20 +1,14 @@
 import { StyleSheet, TextInput, Text, View, SafeAreaView, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 
-import { AntDesign } from '@expo/vector-icons';
-import { SimpleLineIcons } from '@expo/vector-icons';
-import { EvilIcons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-
 import { SliderBox } from 'react-native-image-slider-box';
 import axios from "axios"
 import ProductItem from '../components/ProductItem';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from "@react-navigation/native"
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
-import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 
+import { Ionicons, Entypo, MaterialIcons, AntDesign, SimpleLineIcons, EvilIcons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
 
@@ -401,7 +395,10 @@ const HomeScreen = () => {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* already added addresses */}
-            <Pressable style={{
+            <Pressable onPress={() => {
+              setModalVisible(false)
+              navigation.navigate("Address")
+            }} style={{
               width: 140, height: 140, borderColor: "#D0D0D0", borderWidth: 1, padding: 10, justifyContent: "center",
               alignItems: "center", gap: 3, marginRight: 15, marginTop: 10,
             }}>

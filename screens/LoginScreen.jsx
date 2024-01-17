@@ -31,7 +31,7 @@ const LoginScreen = () => {
         if (token) {
           navigation.replace("Main")
         }
-        
+
       } catch (error) {
         console.log("Error message : ", error);
       }
@@ -39,9 +39,9 @@ const LoginScreen = () => {
     checkLoginStatus();
   }, [])
 
-    
-  
-  
+
+
+
 
   const loginHandler = async () => {
     const user = {
@@ -54,12 +54,12 @@ const LoginScreen = () => {
       const response = await axios.post("http://192.168.43.207:8000/login", user) // physical mobile device
 
       if (response.status == 201 || response.status == 200) {
-        
+
         await AsyncStorage.setItem("authToken", response.data.secretKey)
         // navigation.navigate("Main")
         navigation.replace("Main")
         console.log("response.data.secretKey : ", response.data.secretKey);
-        
+
       } else {
         Alert.alert(
           "Login Error",

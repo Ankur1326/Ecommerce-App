@@ -27,7 +27,7 @@ const RegisterScreen = () => {
 
     // send a POST  request to the backend API to register the user
     try {
-      // const response = await axios.post("http://10.0.2.2:8000/register", user) for android studio
+      // const response = await axios.post("http://10.0.2.2:8000/register", user) // for android studio
       const response = await axios.post("http://192.168.43.207:8000/register", user)
       console.log("response.data.message : ", response.data.message);
 
@@ -35,10 +35,10 @@ const RegisterScreen = () => {
         Alert.alert(
           "Registration successful",
           response.data.message
-          )
-          // setName("")
-          // setEmail("")
-          // setPassword("")
+        )
+        // setName("")
+        // setEmail("")
+        // setPassword("")
       } else {
         Alert.alert(
           "Registration Error",
@@ -56,7 +56,7 @@ const RegisterScreen = () => {
           "Registration Error",
           error.response.data.message
         )
-        
+
       }
       if (error.response.status == 500) {
         Alert.alert(
@@ -207,16 +207,10 @@ const RegisterScreen = () => {
             borderRadius: 5,
           }}
         >
-          <Text
-            style={{ textAlign: "center", color: "white", fontWeight: 600 }}
-          >
-            Register
-          </Text>
+          <Text style={{ textAlign: "center", color: "white", fontWeight: 600 }}>Register</Text>
         </Pressable>
         <Pressable style={{ marginTop: 8 }} onPress={() => navigation.goBack()}>
-          <Text style={{ textAlign: "center", fontSize: 16, color: "#787774" }}>
-            Already Have an account? Sign In
-          </Text>
+          <Text style={{ textAlign: "center", fontSize: 16, color: "#787774" }}>Already Have an account? Sign In</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
