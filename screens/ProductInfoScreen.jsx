@@ -27,9 +27,6 @@ const ProductInfoScreen = () => {
         }, 2000);
     }
 
-    const cart = useSelector((state) => state.cart.cart)
-    console.log(cart);
-
     return (
         <SafeAreaView>
             <ScrollView>
