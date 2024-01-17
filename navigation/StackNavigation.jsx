@@ -16,6 +16,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import ProfileScreen from "../screens/ProfileScreen";
 import CartScreen from "../screens/CartScreen";
 import ProductInfoScreen from "../screens/ProductInfoScreen";
+import AddAddressScreen from "../screens/AddAddressScreen";
+import AddressScreen from "../screens/AddressScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -33,11 +35,7 @@ const StackNavigation = () => {
           tabBarIcon: ({ focused }) => focused ? (<Ionicons name="home" size={24} color="#008E97" />) : (<Ionicons name="home-outline" size={24} color="black" />),
         }} />
 
-        <Tab.Screen name="Profile" component={ProfileScreen} options={{
-          tabBarLabel: "Profile",
-          tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" },
-          headerShown: false,
-          tabBarIcon: ({ focused }) => focused ? (<FontAwesome5 name="user-alt" size={24} color="#008E97" />) : (<FontAwesome5 name="user" size={24} color="black" />),
+        <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: "Profile", tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" }, headerShown: false, tabBarIcon: ({ focused }) => focused ? (<FontAwesome5 name="user-alt" size={24} color="#008E97" />) : (<FontAwesome5 name="user" size={24} color="black" />),
         }} />
 
 
@@ -59,6 +57,8 @@ const StackNavigation = () => {
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="Info" component={ProductInfoScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Address" component={AddAddressScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Add" component={AddressScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
