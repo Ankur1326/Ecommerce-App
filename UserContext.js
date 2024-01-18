@@ -2,12 +2,12 @@ import React, { createContext, useState } from "react";
 
 const UserType = createContext();
 
-const UserContext = ({ childern }) => {
-  const [userId, setUserId] = useState("");
+const UserContext = ({ children }) => {
+  const [userIdFromToken, setUserIdFromToken] = useState("");
 
   return (
-    <UserType.Provider value={{ userId, setUserId }}>
-      {childern}
+    <UserType.Provider value={[userIdFromToken, setUserIdFromToken]}>
+      {children}
     </UserType.Provider>
   );
 };
