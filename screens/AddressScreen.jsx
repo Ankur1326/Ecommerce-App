@@ -1,5 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { jwtDecode } from "jwt-decode";
+import { UserType } from "../UserContext";
 
 const AddressScreen = () => {
 
@@ -9,8 +12,28 @@ const AddressScreen = () => {
     const [street, setStreet] = useState("Ardawate")
     const [landmark, setLandmark] = useState("Ardawata")
     const [postalCode, setPostalCode] = useState("333027")
+    const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
+    
 
-    const handleAddress = async () => {
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = await AsyncStorage.getItem("authToken")
+            console.log("token : ", token);
+            if (token) {
+                const decodedToken = jwtDecode(token)
+                // console.log("decodedToken : ", decodedToken);
+                const userIdFromToken = decodedToken.userId
+                console.log("userIdFromToken : ", userIdFromToken);
+                setUserId(userIdFromToken)
+                
+            }
+            
+
+        }
+        fetchUser()
+    }, [])
+
+    const handleAddAddress = async () => {
         const address = {
             name: name,
             mobileNo,
@@ -21,7 +44,7 @@ const AddressScreen = () => {
         }
         await axios.post("http://192.168.43.207:8000/addresses", address)
     }
-    
+
     return (
         <ScrollView style={{ marginTop: 40 }}>
             <View style={{ height: 50, backgroundColor: "#00CED1" }} />
@@ -65,7 +88,7 @@ const AddressScreen = () => {
                     <TextInput value={postalCode} onChangeText={(text) => setPostalCode(text)} placeholderTextColor={"black"} style={{ padding: 10, borderColor: "#D0D0D0", borderWidth: 1, marginTop: 10, borderRadius: 5, }} placeholder="Enter Pincode" />
                 </View>
 
-                <Pressable onPress={() => handleAddress()} style={{ backgroundColor: "#FFC72C", padding: 19, borderRadius: 6, justifyContent: "center", alignItems: "center", marginTop: 20, }}>
+                <Pressable onPress={() => handleAddAddress()} style={{ backgroundColor: "#FFC72C", padding: 19, borderRadius: 6, justifyContent: "center", alignItems: "center", marginTop: 20, }}>
                     <Text style={{ fontWeight: "bold" }}>Add Address</Text>
                 </Pressable>
             </View>

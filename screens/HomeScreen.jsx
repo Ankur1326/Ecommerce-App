@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native"
 import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 
 import { Ionicons, Entypo, MaterialIcons, AntDesign, SimpleLineIcons, EvilIcons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 const HomeScreen = () => {
 
@@ -221,7 +222,9 @@ const HomeScreen = () => {
     <>
       <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, backgroundColor: "white" }} >
         <ScrollView>
-          <View style={{ backgroundColor: "#00CED1", paddingHorizontal: 15, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
+
+          {/* search ;bar */}
+          <View style={{ backgroundColor: "#b3fffe", paddingHorizontal: 15, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
             <Pressable style={{ backgroundColor: "white", flexDirection: 'row', paddingHorizontal: 10, paddingVertical: 8, width: "88%", alignItems: "center", borderRadius: 5 }}>
               {/* icon */}
               <AntDesign name="search1" size={22} color="black" />
@@ -284,8 +287,9 @@ const HomeScreen = () => {
                 style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
                 <Image source={{ uri: item.image }} style={{ width: 180, height: 180, resizeMode: "contain" }} />
               </Pressable>
+              
             ))}
-          </View>
+           </View>
 
           <Text style={{ height: 1, borderColor: "#D0D0D0", borderWidth: 2, marginTop: 15 }} />
 
