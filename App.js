@@ -4,13 +4,16 @@ import StackNavigation from "./navigation/StackNavigation";
 import { Provider } from "react-redux";
 import store from "./Store";
 import { ModalPortal } from "react-native-modals";
+import { UserContext } from "./UserContext";
 
 export default function App() {
   return (
     <>
       <Provider store={store}>
-        <StackNavigation />
-        <ModalPortal />
+        <UserContext>
+          <StackNavigation />
+          <ModalPortal />
+        </UserContext>
       </Provider>
     </>
   );

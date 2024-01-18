@@ -15,6 +15,9 @@ app.use(bodyParser.json());
 import jwt from "jsonwebtoken";
 import { User } from "./models/user.model.js";
 
+import { jwtDecode } from "jwt-decode";
+
+
 mongoose
   .connect(
     "mongodb+srv://ecommerce:ecommerce@cluster0.g8qsifj.mongodb.net/ecommerce",
@@ -72,7 +75,7 @@ app.post("/register", async (req, res) => {
 });
 
 const generateSecretKey = () => {
-  const secretKey = crypto.randomBytes(20).toString("hex");
+  const secretKey = crypto.randomBytes(32).toString("hex");
   return secretKey;
 };
 
@@ -108,7 +111,6 @@ app.post("/login", async (req, res) => {
     secretKey
   );
 
-  console.log("secretToken : ", secretToken);
 
   res
     .status(200)
