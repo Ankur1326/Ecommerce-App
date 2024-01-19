@@ -55,10 +55,10 @@ const LoginScreen = () => {
 
       if (response.status == 201 || response.status == 200) {
 
-        await AsyncStorage.setItem("authToken", response.data.secretKey)
+        await AsyncStorage.setItem("authToken", response.data.secretToken)
         // navigation.navigate("Main")
         navigation.replace("Main")
-        console.log("response.data.secretKey : ", response.data.secretKey);
+        console.log("response.data.secretToken : ", response.data.secretToken);
 
       } else {
         Alert.alert(

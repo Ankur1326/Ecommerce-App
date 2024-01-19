@@ -1,12 +1,38 @@
 import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, } from "react-native";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { Alert } from "react-native";
+import { UserType } from "../UserContext";
 
 const AddAddressScreen = () => {
     const navigation = useNavigation();
+
+    const [allAddedAddresses, setAllAddedAddresses] = useState([])
+
+    const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
+    console.log("userIdFromToken : ", userIdFromToken);
+
+    useEffect(() => {
+        const fetchAddesses = async () => {
+            try {
+                const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
+                
+                const addresses = response.data.addresses
+                if (addresses) {
+                setAllAddedAddresses(addresses)
+                }
+            } catch (error) {
+                Alert.alert("Error while getting add added addresses", error.response.data.message)
+                console.log("Error while getting add added addresses", error);
+            }
+
+        }
+        fetchAddesses()
+    }, [])
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 50 }}>
             <View style={{ backgroundColor: "#00CED1", padding: 10, flexDirection: "row", alignItems: "center", }}>
@@ -29,9 +55,40 @@ const AddAddressScreen = () => {
                     <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
                 </Pressable>
 
-                <Pressable>
+                <Pressable style={{ flex: 1, alignItems: "center", gap: 14 }}>
                     {/* all the added adresses */}
-                     
+                    <View style={{ marginTop: 10 }}>
+                        <Text style={{ fontWeight: 600, fontSize: 20 }} >Personal Addresses</Text>
+                    </View>
+
+                    {
+                        allAddedAddresses.map((item, index) => (
+                            <View key={index} style={{ width: "90%", borderWidth: 1.5, borderColor: "#b3b3b3", borderRadius: 5, paddingHorizontal: 8, paddingVertical: 10, paddingBottom: 20 }} >
+                                <View style={{ borderBottomWidth: 1.5, paddingBottom: 12, borderColor: "#b3b3b3" }}><Text>Default</Text></View>
+
+                                <View style={{ paddingVertical: 10 }} >
+                                    <Text style={{ fontWeight: 700, fontSize: 15 }} >{item?.name}</Text>
+                                    <Text style={{}} >House No: {item?.houseNo}</Text>
+                                    <Text style={{ fontSize: 15 }} >{item?.landmark}</Text>
+                                    <Text style={{ fontSize: 15 }} >Phone Number: {item?.mobileNo}</Text>
+                                    <Text style={{ fontSize: 15 }} >Pin Code: {item.postalCode}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: "row", gap: 10 }} >
+                                    <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, elevation: 12 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 13 }} >Edit</Text>
+                                    </Pressable>
+                                    <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black", elevation: 12 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 13 }} >Remove</Text>
+                                    </Pressable>
+                                    <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black", elevation: 12 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 13 }} >set a default</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                        ))
+                    }
+
                 </Pressable>
             </View>
         </ScrollView>

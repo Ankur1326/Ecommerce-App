@@ -15,8 +15,7 @@ app.use(bodyParser.json());
 import jwt from "jsonwebtoken";
 import { User } from "./models/user.model.js";
 
-import { jwtDecode } from "jwt-decode";
-
+// import { jwtDecode } from "jwt-decode";
 
 mongoose
   .connect(
@@ -36,6 +35,9 @@ mongoose
 app.listen(port, () => {
   console.log("Server is running on port 8000");
 });
+
+
+
 
 // set endpoint for register user
 app.post("/register", async (req, res) => {
@@ -81,6 +83,8 @@ const generateSecretKey = () => {
 
 const secretKey = generateSecretKey();
 
+
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -106,59 +110,62 @@ app.post("/login", async (req, res) => {
   }
 
   // generate a secret token
-  const secretToken = jwt.sign(
-    { userId: registredUser._id, userEmail: registredUser.email },
-    secretKey
-  );
-
+  const secretToken = jwt.sign({ userId: registredUser._id },secretKey);
 
   res
     .status(200)
-    .json({ message: "You are going to logged in", secretKey: secretKey });
+    .json({ message: "You are going to logged in", secretToken: secretToken });
 });
+
+
+
 
 // endpoint to store a new address to the backend
 app.post("/addresses", async (req, res) => {
   try {
-    const {userId, address} = req.body
+    const { userIdFromToken, address } = req.body;
 
-    console.log("userId : ", userId);
+    console.log("userIdFromToken : ", userIdFromToken);
+    console.log("address : ", address);
 
     // find the user by the userId
-    const user = await User.findById(userId)
+    const user = await User.findById(userIdFromToken);
     if (!user) {
-      return res.status(404).json({message: "User not found"})
+      return res.status(404).json({ message: "User not found (from backend)" });
     }
 
     // add the new address to the user's addresses array
-    user.address.push(address)
+    user.address.push(address);
 
     // save the updated user in the backend
-    await user.save()
+    await user.save();
 
-    res.status(200).json({message: "Address created Successfully"})
-    
+    res.status(200).json({ message: "Address added Successfully!" });
   } catch (error) {
-    res.status(500).json({message: "Internal server error in adding address"})
+    res
+      .status(500)
+      .json({ message: "Internal server error in adding address" });
   }
 });
 
-
-app.get("/addresses/:userId", async() => {
+app.get("/addresses/:userId", async (req, res) => {
   try {
-    const userId = req.params.userId 
+    const userId = req.params.userId;
+    console.log("userId :: ", userId);
 
     // find the user by the userId
-    const user = await User.findById(userId)
+    const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({message: "User not found"})
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const addresses = user.address
-    res.status(200).json({message: "successfully getted all addresses", addresses})
-
-    
+    const addresses = user.address;
+    return res
+      .status(200)
+      .json({ message: "successfully getted all addresses", addresses });
   } catch (error) {
-    res.status(500).json({message: "Internal server Error in retrieveing the addresses"})
+    return res
+      .status(500)
+      .json({ message: "Internal server Error in retrieveing the addresses" });
   }
-})
+});

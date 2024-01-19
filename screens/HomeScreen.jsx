@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, Text, View, SafeAreaView, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 
 import { SliderBox } from 'react-native-image-slider-box';
 import axios from "axios"
@@ -10,8 +10,25 @@ import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
 
 import { Ionicons, Entypo, MaterialIcons, AntDesign, SimpleLineIcons, EvilIcons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { UserType } from '../UserContext';
+import jwt_decode from "jwt-decode"
+
 
 const HomeScreen = () => {
+  const [products, setProducts] = useState([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState("jewelery")
+  const [items, setItems] = useState([
+    { label: "Men's clothing", value: "men's clothing" },
+    { label: "jewelery", value: "jewelery" },
+    { label: "electronics", value: "electronics" },
+    { label: "women's clothing", value: "women's clothing" },
+  ])
+  const [companyOpen, setCompanyOpen] = useState(true)
+  const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
+  const [allAddedAddresses, setAllAddedAddresses] = useState([])
+  const navigation = useNavigation();
 
   const list = [
     {
@@ -186,37 +203,57 @@ const HomeScreen = () => {
     },
   ];
 
-  const [products, setProducts] = useState([])
+  const fetchAllProductsData = async () => {
+    try {
+      const response = await axios.get("https://fakestoreapi.com/products")
+      setProducts(response.data)
+      // await AsyncStorage.removeItem("authToken") 
+    } catch (error) {
+      console.log("Error is while fetching all products : ", error);
+    }
+  }
 
-  const [open, setOpen] = useState(false)
-  const [category, setCategory] = useState("jewelery")
-  const [items, setItems] = useState([
-    { label: "Men's clothing", value: "men's clothing" },
-    { label: "jewelery", value: "jewelery" },
-    { label: "electronics", value: "electronics" },
-    { label: "women's clothing", value: "women's clothing" },
-  ])
-  const [companyOpen, setCompanyOpen] = useState(true)
-  const navigation = useNavigation();
+  const fetchUser = async () => {
+    const token = await AsyncStorage.getItem("authToken")
+    console.log("token : ", token);
+    if (token) {
+      const decodedToken = jwt_decode(token)
+      const userId = decodedToken.userId
+      setUserIdFromToken(userId)
 
+    }
+  }
 
   useEffect(() => {
-    const fetchAllProductsData = async () => {
-      try {
-        const response = await axios.get("https://fakestoreapi.com/products")
-        setProducts(response.data)
-      } catch (error) {
-        console.log("Error is while fetching all products : ", error);
-      }
+    if (userIdFromToken) {
+      fetchAddesses()
     }
+  }, [modalVisible])
+
+
+  const fetchAddesses = async () => {
+    try {
+      const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
+
+      const addresses = response.data.addresses
+      setAllAddedAddresses(addresses)
+    } catch (error) {
+      Alert.alert("Error while fetching all added addresses", error.response.data.message)
+      console.log("Error while fetching all added addresses", error);
+    }
+
+  }
+  useEffect(() => {
     fetchAllProductsData()
+    fetchUser()
+    fetchAddesses()
   }, [])
 
   const onGenderOpen = useCallback(() => {
     setCompanyOpen(false)
   }, [])
 
-  const [modalVisible, setModalVisible] = useState(false)
+
 
   return (
     <>
@@ -287,9 +324,9 @@ const HomeScreen = () => {
                 style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
                 <Image source={{ uri: item.image }} style={{ width: 180, height: 180, resizeMode: "contain" }} />
               </Pressable>
-              
+
             ))}
-           </View>
+          </View>
 
           <Text style={{ height: 1, borderColor: "#D0D0D0", borderWidth: 2, marginTop: 15 }} />
 
@@ -312,7 +349,7 @@ const HomeScreen = () => {
                   })
                 }
                 style={{ marginVertical: 10, alignItems: 'center', justifyContent: 'center', }}
-                key={item.id} >
+                key={index} >
                 <Image source={{ uri: item.image }} style={{ width: 150, height: 150, resizeMode: "contain" }} />
 
                 <View
@@ -376,6 +413,7 @@ const HomeScreen = () => {
         </ScrollView>
       </SafeAreaView>
 
+      {/* Modal  */}
       <BottomModal onBackdropPress={() => setModalVisible(!modalVisible)} swipeDirection={["up", "down"]} swipeThreshold={200} modalAnimation={
         new SlideAnimation({
           slideFrom: "bottom"
@@ -398,7 +436,19 @@ const HomeScreen = () => {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* already added addresses */}
+            {/* we will show added addresses */}
+
+            {
+              allAddedAddresses.map((item, index) => (
+                <Pressable key={index} style={{ width: 140, height: 140, borderColor: "#D0D0D0", borderWidth: 1, gap: 3, marginRight: 15, marginTop: 10, paddingVertical: 7, paddingHorizontal: 5 }}>
+                  <Text style={{ fontWeight: '500 ' }} >{item.name}</Text>
+                  <Text style={{ fontWeight: '500 ' }} >{item.houseNo}</Text>
+                  <Text style={{ fontWeight: '500 ' }} >{item.landmark}</Text>
+                  <Text style={{ fontWeight: '500 ' }} >{item.postalCode}</Text>
+                </Pressable>
+              ))
+            }
+
             <Pressable onPress={() => {
               setModalVisible(false)
               navigation.navigate("Address")
@@ -412,18 +462,18 @@ const HomeScreen = () => {
           </ScrollView>
 
           <View style={{ flexDirection: "column", gap: 7, marginBottom: 30 }} >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
-                <Entypo name="location-pin" size={24} color="#0066b2" />
-                <Text style={{ color: "#0066b2", fontWeight: "400" }} >Enter as Indian pincode</Text>
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
-                <Ionicons name="locate" size={24} color="#0066b2" />
-                <Text style={{ color: "#0066b2", fontWeight: "400" }} >Use My Current location</Text>
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
-                <AntDesign name="earth" size={18} color="#0066b2" />
-                <Text style={{ color: "#0066b2", fontWeight: "400" }} >Delever Outside India</Text>
-              </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
+              <Entypo name="location-pin" size={24} color="#0066b2" />
+              <Text style={{ color: "#0066b2", fontWeight: "400" }} >Enter as Indian pincode</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
+              <Ionicons name="locate" size={24} color="#0066b2" />
+              <Text style={{ color: "#0066b2", fontWeight: "400" }} >Use My Current location</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }} >
+              <AntDesign name="earth" size={18} color="#0066b2" />
+              <Text style={{ color: "#0066b2", fontWeight: "400" }} >Delever Outside India</Text>
+            </View>
           </View>
 
         </ModalContent>

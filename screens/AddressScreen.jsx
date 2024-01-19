@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, Alert, } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { jwtDecode } from "jwt-decode";
+import jwt_decode from "jwt-decode"
 import { UserType } from "../UserContext";
+import { useNavigation } from "@react-navigation/native"
+import axios from "axios"
+
 
 const AddressScreen = () => {
 
@@ -12,37 +15,38 @@ const AddressScreen = () => {
     const [street, setStreet] = useState("Ardawate")
     const [landmark, setLandmark] = useState("Ardawata")
     const [postalCode, setPostalCode] = useState("333027")
+
     const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
-    
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = await AsyncStorage.getItem("authToken")
-            console.log("token : ", token);
-            if (token) {
-                const decodedToken = jwtDecode(token)
-                // console.log("decodedToken : ", decodedToken);
-                const userIdFromToken = decodedToken.userId
-                console.log("userIdFromToken : ", userIdFromToken);
-                setUserId(userIdFromToken)
-                
-            }
-            
-
-        }
-        fetchUser()
-    }, [])
+    const navigation = useNavigation()
 
     const handleAddAddress = async () => {
         const address = {
-            name: name,
+            name,
             mobileNo,
             houseNo,
             street,
             landmark,
             postalCode
         }
-        await axios.post("http://192.168.43.207:8000/addresses", address)
+        await axios.post("http://192.168.43.207:8000/addresses", { userIdFromToken, address }).then((response) => {
+            Alert.alert("Success", response.data.message)
+            setName("")
+            setMobileNo("")
+            setHouseNo("")
+            setStreet("")
+            setLandmark("")
+            setPostalCode("")
+
+            setTimeout(() => {
+                navigation.goBack()
+            }, 500);
+        }).catch((error) => {
+            Alert.alert("Error, Failed to add address", error.response.data.message)
+            console.log("Error, failed to add address ", error);
+        })
+
+
     }
 
     return (
