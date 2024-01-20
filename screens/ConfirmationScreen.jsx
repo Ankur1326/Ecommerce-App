@@ -1,6 +1,10 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import axios from "axios";
+import { UserType } from '../UserContext';
+import { Entypo } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -10,10 +14,138 @@ const ConfirmationScreen = () => {
         { title: "Place Order", content: "Order Summary" },
     ]
 
-    const [currentStep, setCurrentStep] = useState()
+    const [currentStep, setCurrentStep] = useState(0)
+    const [addresses, setAddresses] = useState([])
+
+    const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
+    // function to fetch all added addresses from database
+    const fetchAddesses = async () => {
+        try {
+            const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
+
+            const addresses = response.data.addresses
+            if (addresses) {
+                setAddresses(addresses)
+            }
+        } catch (error) {
+            Alert.alert("Error while getting add added addresses", error.response.data.message)
+            console.log("Error while getting add added addresses", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchAddesses()
+    }, [])
+
+    const [selectedAddress, setSelectedAddress] = useState("")
+
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
             <ScrollView>
+                <StatusBar backgroundColor="#00b5b0" />
+                <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginBottom: 20,
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        {steps?.map((step, index) => (
+                            <View style={{ justifyContent: "center", alignItems: "center" }}>
+                                {index > 0 && (
+                                    <View
+                                        style={[
+                                            { flex: 1, height: 2, backgroundColor: "green" },
+                                            index <= currentStep && { backgroundColor: "green" },
+                                        ]}
+                                    />
+                                )}
+                                <View
+                                    style={[
+                                        {
+                                            width: 30,
+                                            height: 30,
+                                            borderRadius: 15,
+                                            backgroundColor: "#ccc",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        },
+                                        index < currentStep && { backgroundColor: "green" },
+                                    ]}
+                                >
+                                    {index < currentStep ? (
+                                        <Text
+                                            style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
+                                        >
+                                            &#10003;
+                                        </Text>
+                                    ) : (
+                                        <Text
+                                            style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
+                                        >
+                                            {index + 1}
+                                        </Text>
+                                    )}
+                                </View>
+                                <Text style={{ textAlign: "center", marginTop: 8 }}>
+                                    {step.title}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+
+                {currentStep == 0 && (
+                    <View style={{ marginHorizontal: 20 }} >
+                        <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 15 }}>Select a delivery address</Text>
+
+                        <Pressable style={{ backgroundColor: "yellow" }}>
+                            {addresses?.map((item, index) => (
+                                <Pressable onPress={() => setSelectedAddress(item)} style={{ backgroundColor: "white", borderWidth: 1, borderColor: "#b3b3b3", borderRadius: 5, paddingHorizontal: 8, paddingBottom: 20 }} >
+
+
+                                    <View key={index} style={{ flexDirection: "row", alignItems: 'center', gap: 10, }} >
+                                        {selectedAddress && selectedAddress._id === item?._id ? (
+                                            <FontAwesome5 name="dot-circle" size={24} color="#008397" />
+                                        ) : (
+                                            <Entypo name="circle" size={24} color="gray" />
+
+                                        )}
+
+                                        <View style={{ paddingVertical: 10 }} >
+                                            <Text style={{ fontWeight: 700, fontSize: 15 }} >{item?.name}</Text>
+                                            <Text style={{}} >{item?.houseNo}</Text>
+                                            <Text style={{ fontSize: 15 }} >{item?.landmark}</Text>
+                                            <Text style={{ fontSize: 15 }} >Phone Number: {item?.mobileNo}</Text>
+                                            <Text style={{ fontSize: 15 }} >Pin Code: {item.postalCode}</Text>
+                                        </View>
+
+                                    </View>
+
+                                    {
+                                        selectedAddress && selectedAddress._id === item?._id ? (
+                                            <View style={{ flexDirection: "column", gap: 10 }} >
+                                                <Pressable onPress={() => setCurrentStep(1)} style={{ paddingHorizontal: 15, paddingVertical: 15, borderRadius: 5, backgroundColor: "#f7b539" }}>
+                                                    <Text style={{ fontWeight: 500, fontSize: 15, textAlign: 'center' }} >Deliver to this address</Text>
+                                                </Pressable>
+                                                <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 8.5, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black" }}>
+                                                    <Text style={{ fontWeight: 500, fontSize: 12.5, textAlign: 'center' }} >Edit Addess</Text>
+                                                </Pressable>
+                                                <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 8.5, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black" }}>
+                                                    <Text style={{ fontWeight: 500, fontSize: 12.5, textAlign: 'center' }} >Add delivery instructions</Text>
+                                                </Pressable>
+                                            </View>
+                                        ) : ""
+                                    }
+
+                                </Pressable>
+                            ))}
+                        </Pressable>
+                    </View>
+                )}
+
 
             </ScrollView>
         </SafeAreaView>

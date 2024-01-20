@@ -14,6 +14,7 @@ const AddAddressScreen = () => {
 
     const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
 
+    // function to fetch all added addresses from database
     const fetchAddesses = async () => {
         try {
             const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
