@@ -39,7 +39,6 @@ const AddAddressScreen = () => {
         }, [])
     )
 
-
     const handleRemeoveAddress = async (addressId, userIdFromToken) => {
         const response = await axios.post(`http://192.168.43.207:8000/address/remove/${addressId}`, { userIdFromToken })
         if (response.status == 200) {
