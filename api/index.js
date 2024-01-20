@@ -36,9 +36,6 @@ app.listen(port, () => {
   console.log("Server is running on port 8000");
 });
 
-
-
-
 // set endpoint for register user
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -83,8 +80,6 @@ const generateSecretKey = () => {
 
 const secretKey = generateSecretKey();
 
-
-
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -110,23 +105,17 @@ app.post("/login", async (req, res) => {
   }
 
   // generate a secret token
-  const secretToken = jwt.sign({ userId: registredUser._id },secretKey);
+  const secretToken = jwt.sign({ userId: registredUser._id }, secretKey);
 
   res
     .status(200)
     .json({ message: "You are going to logged in", secretToken: secretToken });
 });
 
-
-
-
 // endpoint to store a new address to the backend
 app.post("/addresses", async (req, res) => {
   try {
     const { userIdFromToken, address } = req.body;
-
-    console.log("userIdFromToken : ", userIdFromToken);
-    console.log("address : ", address);
 
     // find the user by the userId
     const user = await User.findById(userIdFromToken);
@@ -148,10 +137,10 @@ app.post("/addresses", async (req, res) => {
   }
 });
 
+// endpoint to get all stored addresses by user
 app.get("/addresses/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
-    console.log("userId :: ", userId);
 
     // find the user by the userId
     const user = await User.findById(userId);
@@ -167,5 +156,38 @@ app.get("/addresses/:userId", async (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal server Error in retrieveing the addresses" });
+  }
+});
+
+// endpoint to delete address
+app.post("/address/remove/:addressId", async (req, res) => {
+  const { userIdFromToken } = req.body;
+
+  // Find the user by userId
+  try {
+    const user = await User.findById(userIdFromToken);
+
+    if (!user) {
+      return res.status(404).json({ message: "user Not found" });
+    }
+    const addressArray = user.address;
+
+    // get addressId form params 
+    const addressId = req.params.addressId;
+
+    // Filter out the specified address from the addresses array
+    const filteredArray = addressArray.filter(
+      (item) => item._id.toString() !== addressId
+    );
+
+    // Update the user with filtered array
+    user.address = filteredArray;
+
+    // Save the user to persist the changes
+    await user.save();
+
+    res.status(200).json({ message: "Address deleted successfully" });
+  } catch (error) {
+    return res.status(400).json({message: "address is not being deleted"})
   }
 });

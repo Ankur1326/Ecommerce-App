@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { Alert } from "react-native";
 import { UserType } from "../UserContext";
@@ -13,25 +13,43 @@ const AddAddressScreen = () => {
     const [allAddedAddresses, setAllAddedAddresses] = useState([])
 
     const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
-    console.log("userIdFromToken : ", userIdFromToken);
 
-    useEffect(() => {
-        const fetchAddesses = async () => {
-            try {
-                const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
-                
-                const addresses = response.data.addresses
-                if (addresses) {
+    const fetchAddesses = async () => {
+        try {
+            const response = await axios.get(`http://192.168.43.207:8000/addresses/${userIdFromToken}`)
+
+            const addresses = response.data.addresses
+            if (addresses) {
                 setAllAddedAddresses(addresses)
-                }
-            } catch (error) {
-                Alert.alert("Error while getting add added addresses", error.response.data.message)
-                console.log("Error while getting add added addresses", error);
             }
-
+        } catch (error) {
+            Alert.alert("Error while getting add added addresses", error.response.data.message)
+            console.log("Error while getting add added addresses", error);
         }
+
+    }
+    useEffect(() => {
         fetchAddesses()
     }, [])
+
+    // refresh the addresses when the component comes to the focus ie basically when we navigate back and update in the address
+    useFocusEffect(
+        useCallback(() => {
+            fetchAddesses()
+        }, [])
+    )
+
+
+    const handleRemeoveAddress = async (addressId, userIdFromToken) => {
+        const response = await axios.post(`http://192.168.43.207:8000/address/remove/${addressId}`, { userIdFromToken })
+        if (response.status == 200) {
+            // fetchAddesses()
+        }
+        if (response.status == 400) {
+            Alert.alert("Internal server error", response.data.message)
+        }
+    }
+
 
     return (
         <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 50 }}>
@@ -72,13 +90,14 @@ const AddAddressScreen = () => {
                                     <Text style={{ fontSize: 15 }} >{item?.landmark}</Text>
                                     <Text style={{ fontSize: 15 }} >Phone Number: {item?.mobileNo}</Text>
                                     <Text style={{ fontSize: 15 }} >Pin Code: {item.postalCode}</Text>
+                                    <Text style={{ fontSize: 15 }} >_id: {item._id}</Text>
                                 </View>
 
                                 <View style={{ flexDirection: "row", gap: 10 }} >
                                     <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, elevation: 12 }}>
                                         <Text style={{ fontWeight: 500, fontSize: 13 }} >Edit</Text>
                                     </Pressable>
-                                    <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black", elevation: 12 }}>
+                                    <Pressable onPress={() => handleRemeoveAddress(item._id, userIdFromToken)} style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black", elevation: 12 }}>
                                         <Text style={{ fontWeight: 500, fontSize: 13 }} >Remove</Text>
                                     </Pressable>
                                     <Pressable style={{ borderWidth: 1, paddingHorizontal: 15, paddingVertical: 6, borderColor: "#b3b3b3", borderRadius: 5, shadowColor: "black", elevation: 12 }}>

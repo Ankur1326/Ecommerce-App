@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, Text, View, SafeAreaView, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
+import { StyleSheet, TextInput, Text, View, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 
 import { SliderBox } from 'react-native-image-slider-box';
@@ -12,6 +12,8 @@ import { Ionicons, Entypo, MaterialIcons, AntDesign, SimpleLineIcons, EvilIcons 
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { UserType } from '../UserContext';
 import jwt_decode from "jwt-decode"
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const HomeScreen = () => {
@@ -28,6 +30,9 @@ const HomeScreen = () => {
   const [companyOpen, setCompanyOpen] = useState(true)
   const [userIdFromToken, setUserIdFromToken] = useContext(UserType)
   const [allAddedAddresses, setAllAddedAddresses] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState("")
+  console.log("selectedAddress : ", selectedAddress);
+
   const navigation = useNavigation();
 
   const list = [
@@ -207,7 +212,6 @@ const HomeScreen = () => {
     try {
       const response = await axios.get("https://fakestoreapi.com/products")
       setProducts(response.data)
-      // await AsyncStorage.removeItem("authToken") 
     } catch (error) {
       console.log("Error is while fetching all products : ", error);
     }
@@ -257,7 +261,7 @@ const HomeScreen = () => {
 
   return (
     <>
-      <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 40 : 0, backgroundColor: "white" }} >
+      <SafeAreaView style={{ backgroundColor: "white" }} >
         <ScrollView>
 
           {/* search ;bar */}
@@ -277,7 +281,14 @@ const HomeScreen = () => {
           <Pressable onPress={() => setModalVisible(!modalVisible)} style={{ flexDirection: "row", alignItems: "center", gap: 5, padding: 13, backgroundColor: "#AfEEEE" }} >
             <EvilIcons name="location" size={28} color="black" />
             <Pressable>
-              <Text style={{ fontSize: 14, fontWeight: "500" }} >Delever To Sujan - Bangalore 560024</Text>
+              {selectedAddress ? (
+                <Text style={{ fontSize: 14, fontWeight: "500" }} >Delever To {selectedAddress.name} - {selectedAddress.landmark} {selectedAddress.postalCode}</Text>
+
+              ) : (
+                <Text style={{ fontSize: 14, fontWeight: "500" }} >Add a Address</Text>
+
+              )}
+
             </Pressable>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </Pressable>
@@ -294,6 +305,7 @@ const HomeScreen = () => {
             horizontal showsHorizontalScrollIndicator={false}
           />
 
+          {/* SliderBox Images   */}
           <SliderBox
             images={images}
             // sliderBoxHeight={200}
@@ -306,6 +318,7 @@ const HomeScreen = () => {
             ImageComponentStyle={{ width: "100%" }}
           ></SliderBox>
 
+          {/* Trending Deals of the week  */}
           <Text style={{ marginTop: 8, fontSize: 18, fontWeight: 700, marginLeft: 10 }}>Trending Deals of the week</Text>
           <View style={{ flexDirection: 'row', flexWrap: "wrap", }} >
             {deals.map((item, index) => (
@@ -321,15 +334,17 @@ const HomeScreen = () => {
                     oldPrice: item?.oldPrice,
                     item: item,
                   })}
-                style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={item.id}>
+                style={{ marginVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: "50%" }} key={index}>
                 <Image source={{ uri: item.image }} style={{ width: 180, height: 180, resizeMode: "contain" }} />
               </Pressable>
 
             ))}
           </View>
 
+          {/* Border */}
           <Text style={{ height: 1, borderColor: "#D0D0D0", borderWidth: 2, marginTop: 15 }} />
 
+          {/* Today's Deals */}
           <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
             Today's Deals
           </Text>
@@ -408,7 +423,6 @@ const HomeScreen = () => {
             {products?.filter((item) => item.category == category)
               .map((item, index) => (<ProductItem item={item} key={index} />
               ))}
-            {/* {products } */}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -439,8 +453,8 @@ const HomeScreen = () => {
             {/* we will show added addresses */}
 
             {
-              allAddedAddresses.map((item, index) => (
-                <Pressable key={index} style={{ width: 140, height: 140, borderColor: "#D0D0D0", borderWidth: 1, gap: 3, marginRight: 15, marginTop: 10, paddingVertical: 7, paddingHorizontal: 5 }}>
+              allAddedAddresses?.map((item, index) => (
+                <Pressable onPress={() => setSelectedAddress(item)} key={index} style={{ width: 140, height: 140, borderColor: "#D0D0D0", borderWidth: 1, gap: 3, marginRight: 15, marginTop: 10, paddingVertical: 7, paddingHorizontal: 5, backgroundColor: selectedAddress === item ? "#fbceb1" : "white" }}>
                   <Text style={{ fontWeight: '500 ' }} >{item.name}</Text>
                   <Text style={{ fontWeight: '500 ' }} >{item.houseNo}</Text>
                   <Text style={{ fontWeight: '500 ' }} >{item.landmark}</Text>
