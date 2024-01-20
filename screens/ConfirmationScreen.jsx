@@ -38,17 +38,18 @@ const ConfirmationScreen = () => {
     }, [])
 
     const [selectedAddress, setSelectedAddress] = useState("")
+    const [option, setOption] = useState(false)
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
             <ScrollView>
                 <StatusBar backgroundColor="#00b5b0" />
-                <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
+                <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40, borderBottomWidth: 5.6, marginBottom: 15, borderBottomColor: "#bababa" }}>
                     <View
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginBottom: 20,
+                            marginBottom: 8,
                             justifyContent: "space-between",
                         }}
                     >
@@ -99,7 +100,7 @@ const ConfirmationScreen = () => {
 
                 {currentStep == 0 && (
                     <View style={{ marginHorizontal: 20 }} >
-                        <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 15 }}>Select a delivery address</Text>
+                        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>Select a delivery address</Text>
 
                         <Pressable style={{ backgroundColor: "yellow" }}>
                             {addresses?.map((item, index) => (
@@ -146,6 +147,42 @@ const ConfirmationScreen = () => {
                     </View>
                 )}
 
+                {
+                    currentStep == 1 && (
+                        <View style={{ width: "100%", paddingHorizontal: 15 }} >
+                            <Text style={{ fontSize: 22, fontWeight: "bold" }} >Choose your delivery options </Text>
+                            <Text style={{ fontSize: 17, fontWeight: "bold", marginTop: 20 }} >Choose a delivery speen </Text>
+
+                            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', borderWidth: 1, borderColor: "gray", paddingVertical: 10, paddingHorizontal: 8, marginTop: 7, borderBottomLeftRadius: 6, borderBottomRightRadius: 6 }} >
+
+                                {
+                                    option == true ? (
+                                        <FontAwesome5 onPress={() => setOption(!option)} name="dot-circle" size={24} color="#008397" />
+                                    ) : (<Entypo onPress={() => setOption(!option)} name="circle" size={24} color="gray" />)
+                                }
+
+                                <Text style={{ flex: 1 }} >
+                                    <Text style={{ color: "green", fontWeight: 500 }} >Tomorrow by 10pm</Text>
+                                    <Text style={{ fontWeight: 700 }} > — Free Delivery</Text>
+                                </Text>
+                            </View>
+
+                            {
+                                option == true ? (
+                                    <Pressable onPress={() => setCurrentStep(2)} style={{ paddingHorizontal: 15, paddingVertical: 15, borderRadius: 5, backgroundColor: "#f7b539", marginTop: 30 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 15, textAlign: 'center' }} >Continue</Text>
+                                    </Pressable>
+                                ) : (
+                                    <Pressable style={{ paddingHorizontal: 15, paddingVertical: 15, borderRadius: 5, backgroundColor: "#bdbdbd", marginTop: 30 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 15, textAlign: 'center' }} >Please select the option</Text>
+                                    </Pressable>
+                                )
+                            }
+
+
+                        </View>
+                    )
+                }
 
             </ScrollView>
         </SafeAreaView>
