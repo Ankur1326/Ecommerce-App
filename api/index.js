@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 
 import jwt from "jsonwebtoken";
 import { User } from "./models/user.model.js";
+import { Order } from "./models/order.model.js";
 
 // import { jwtDecode } from "jwt-decode";
 
@@ -172,7 +173,7 @@ app.post("/address/remove/:addressId", async (req, res) => {
     }
     const addressArray = user.address;
 
-    // get addressId form params 
+    // get addressId form params
     const addressId = req.params.addressId;
 
     // Filter out the specified address from the addresses array
@@ -188,6 +189,49 @@ app.post("/address/remove/:addressId", async (req, res) => {
 
     res.status(200).json({ message: "Address deleted successfully" });
   } catch (error) {
-    return res.status(400).json({message: "address is not being deleted"})
+    return res.status(400).json({ message: "address is not being deleted" });
+  }
+});
+
+
+// endpoint to store all the order
+app.post("/order", async (req, res) => {
+  try {
+    const { userId, cartItem, shippingAddress, paymentMethod, totalPrice } =
+      req.body;
+
+    console.log("userId : ", userId);
+
+    // find the user by user id
+    const user = await User.findById(userId);
+    console.log("user : ", user);
+
+    // get user from req
+
+    console.log("req.body : ", req.body);
+
+    // create an array of product objects from the cart Items
+    const products = cartItem.map((item) => ({
+      name: item?.name,
+      quantity: item?.quantity,
+      price: item?.price,
+      image: item?.image,
+    }));
+
+    // create a new Order
+    const order = new Order({
+      user: userId,
+      products: products,
+      totalPrice: totalPrice,
+      shippingAddress: shippingAddress,
+      paymentMethod: paymentMethod,
+    });
+
+    // save
+    await order.save();
+    return res.status(200).json({ message: "Order Created successfully" });
+  } catch (error) {
+    console.log("error creating order", error);
+    res.status(500).json({ messsage: "Error creating order" });
   }
 });
