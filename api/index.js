@@ -235,3 +235,28 @@ app.post("/order", async (req, res) => {
     res.status(500).json({ messsage: "Error creating order" });
   }
 });
+
+
+
+// get the user profile
+app.get("/profile/:userId", async (req, res) => {
+  try {
+    // get the userId form url
+    const userId = req.params.userId;
+
+    // get user from the userId
+    const user = await User.findById(userId);
+
+    // if user not show the error message with status code 404
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // return the user with 200 status code
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error retrieving the user profile" });
+  }
+});
