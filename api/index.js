@@ -210,9 +210,10 @@ app.post("/order", async (req, res) => {
 
     console.log("req.body : ", req.body);
 
+    console.log("cartItem : ", cartItem);
     // create an array of product objects from the cart Items
     const products = cartItem.map((item) => ({
-      name: item?.name,
+      name: item?.title,
       quantity: item?.quantity,
       price: item?.price,
       image: item?.image,
@@ -237,7 +238,6 @@ app.post("/order", async (req, res) => {
 });
 
 
-
 // get the user profile
 app.get("/profile/:userId", async (req, res) => {
   try {
@@ -246,6 +246,7 @@ app.get("/profile/:userId", async (req, res) => {
 
     // get user from the userId
     const user = await User.findById(userId);
+
 
     // if user not show the error message with status code 404
     if (!user) {
@@ -260,3 +261,24 @@ app.get("/profile/:userId", async (req, res) => {
       .json({ message: "Error retrieving the user profile" });
   }
 });
+
+
+// endpoint to get the all orders
+
+// http://10.0.2.2:8000/order
+app.get("/orders/:userId", async(req, res) => {
+  try {
+    const userId = req.params.userId
+    const orders = await Order.find({user: userId}).populate("user")
+
+    console.log("orders : ", orders);
+    if (!orders || orders.length === 0 ) {
+      return res.status(404).json({message: "No orders found"})
+    }
+
+    return res.status(200).json({orders})
+    
+  } catch (error) {
+    return res.status(500).json({message: "Error while getting all orders"})
+  }
+} )
