@@ -6,6 +6,8 @@ import { UserType } from '../UserContext';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from "react-redux"
+import { useNavigation } from "@react-navigation/native"
+import { cleanCart } from '../redux/CartReducer';
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -47,6 +49,32 @@ const ConfirmationScreen = () => {
     const total = cart?.map((item) => item.price * item.quantity).reduce((curr, prev) => curr + prev, 0);
 
     console.log("total : ", total);
+
+    const navigation = useNavigation()
+    const dispatch = useDispatch()
+    const handlePlaceOrder = async () => {
+        try {
+            const response = await axios.post(
+                `http://192.168.43.207:8000/order`,
+                { userId: userIdFromToken, cartItem: cart, shippingAddress: selectedAddress, paymentMethod: selectedPaymentOption, totalPrice: total }
+            )
+
+            if (response.status === 200) {
+                navigation.navigate("Order")
+                dispatch(cleanCart)
+                console.log(response.data.message);
+            }
+            else {
+              console.log("error creating order ", response.data.message);
+            }
+
+
+        } catch (error) {
+            Alert.alert("Error while place your order")
+            console.log("Error while place your order", error);
+        }
+
+    }
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
