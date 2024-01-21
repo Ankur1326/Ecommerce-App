@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import axios from "axios";
 import { UserType } from '../UserContext';
 import { Entypo } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -39,6 +39,7 @@ const ConfirmationScreen = () => {
 
     const [selectedAddress, setSelectedAddress] = useState("")
     const [option, setOption] = useState(false)
+    const [selectedPaymentOption, setSelectedPaymentOption] = useState("")
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
@@ -98,6 +99,7 @@ const ConfirmationScreen = () => {
                     </View>
                 </View>
 
+                // step 0 / Address  
                 {currentStep == 0 && (
                     <View style={{ marginHorizontal: 20 }} >
                         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>Select a delivery address</Text>
@@ -146,7 +148,8 @@ const ConfirmationScreen = () => {
                         </Pressable>
                     </View>
                 )}
-
+                
+                // stet 1 / Delivery   
                 {
                     currentStep == 1 && (
                         <View style={{ width: "100%", paddingHorizontal: 15 }} >
@@ -184,6 +187,94 @@ const ConfirmationScreen = () => {
                     )
                 }
 
+                // step 2 / Payment  
+                {
+                    currentStep == 2 && (
+                        <View style={{ paddingHorizontal: 10 }}>
+                            <Text style={{ fontSize: 22, fontWeight: "bold" }} >Select Your payment Method</Text>
+                            <View>
+                                <Pressable onPress={() => setSelectedPaymentOption("cash")} style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, flexDirection: "row", alignItems: "center", gap: 7, marginTop: 12, }}>
+                                    {
+                                        selectedPaymentOption == "cash" ? (
+                                            <FontAwesome5 name="dot-circle" size={24} color="#008397" />
+                                        ) : (<Entypo name="circle" size={24} color="gray" />)
+                                    }
+
+                                    <Text>Cash on Delivery</Text>
+                                </Pressable>
+                                <Pressable onPress={() => setSelectedPaymentOption("card")} style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, flexDirection: "row", alignItems: "center", gap: 7, marginTop: 12, }}>
+                                    {
+                                        selectedPaymentOption == "card" ? (
+                                            <FontAwesome5 name="dot-circle" size={24} color="#008397" />
+                                        ) : (<Entypo name="circle" size={24} color="gray" />)
+                                    }
+                                    <Text>UPI / Credit or debit card</Text>
+                                </Pressable>
+                            </View>
+                            {
+                                selectedPaymentOption !== "" ? (
+                                    <Pressable onPress={() => setCurrentStep(3)} style={{ paddingHorizontal: 15, paddingVertical: 15, borderRadius: 5, backgroundColor: "#f7b539", marginTop: 30 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 15, textAlign: 'center' }} >Continue</Text>
+                                    </Pressable>
+                                ) : (
+                                    <Pressable style={{ paddingHorizontal: 15, paddingVertical: 15, borderRadius: 5, backgroundColor: "#bdbdbd", marginTop: 30 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 15, textAlign: 'center' }} >Please select the option</Text>
+                                    </Pressable>
+                                )
+                            }
+                        </View>
+                    )
+                }
+
+                 // step 3 / Place Order
+                {
+                    currentStep === 3 && selectedOption === "cash" && (
+                        <View style={{ marginHorizontal: 20 }}>
+                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Order Now</Text>
+
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, marginTop: 10, }}>
+                                <View>
+                                    <Text style={{ fontSize: 17, fontWeight: "bold" }}>Save 5% and never run out</Text>
+                                    <Text style={{ fontSize: 15, color: "gray", marginTop: 5 }}>Turn on auto deliveries</Text>
+                                </View>
+
+                                <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
+                            </View>
+
+                            <View style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, marginTop: 10, }}>
+                                <Text>Shipping to selectedAddress?.name</Text>
+
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
+                                    <Text style={{ fontSize: 16, fontWeight: "500", color: "gray" }}>Items</Text>
+
+                                    <Text style={{ color: "gray", fontSize: 16 }}>₹total</Text>
+                                </View>
+
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
+                                    <Text style={{ fontSize: 16, fontWeight: "500", color: "gray" }}>Delivery</Text>
+
+                                    <Text style={{ color: "gray", fontSize: 16 }}>₹0</Text>
+                                </View>
+
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
+                                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>Order Total</Text>
+
+                                    <Text style={{ color: "#C60C30", fontSize: 17, fontWeight: "bold" }}>₹total</Text>
+                                </View>
+                            </View>
+
+                            <View style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, marginTop: 10, }}>
+                                <Text style={{ fontSize: 16, color: "gray" }}>Pay With</Text>
+
+                                <Text style={{ fontSize: 16, fontWeight: "600", marginTop: 7 }}>Pay on delivery (Cash)</Text>
+                            </View>
+
+                            <Pressable onPress={handlePlaceOrder} style={{ backgroundColor: "#FFC72C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginTop: 20, }}>
+                                <Text>Place your order</Text>
+                            </Pressable>
+                        </View>
+                    )
+                }
             </ScrollView>
         </SafeAreaView>
     )
