@@ -5,6 +5,7 @@ import axios from "axios";
 import { UserType } from '../UserContext';
 import { Entypo } from '@expo/vector-icons';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { useSelector, useDispatch } from "react-redux"
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -40,6 +41,12 @@ const ConfirmationScreen = () => {
     const [selectedAddress, setSelectedAddress] = useState("")
     const [option, setOption] = useState(false)
     const [selectedPaymentOption, setSelectedPaymentOption] = useState("")
+
+    const cart = useSelector((state) => state.cart.cart)
+    console.log(cart);
+    const total = cart?.map((item) => item.price * item.quantity).reduce((curr, prev) => curr + prev, 0);
+
+    console.log("total : ", total);
 
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
@@ -99,7 +106,7 @@ const ConfirmationScreen = () => {
                     </View>
                 </View>
 
-                // step 0 / Address  
+                {/* step 0 / Address */}
                 {currentStep == 0 && (
                     <View style={{ marginHorizontal: 20 }} >
                         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>Select a delivery address</Text>
@@ -148,8 +155,8 @@ const ConfirmationScreen = () => {
                         </Pressable>
                     </View>
                 )}
-                
-                // stet 1 / Delivery   
+
+                {/* stet 1 / Delivery */}
                 {
                     currentStep == 1 && (
                         <View style={{ width: "100%", paddingHorizontal: 15 }} >
@@ -187,7 +194,7 @@ const ConfirmationScreen = () => {
                     )
                 }
 
-                // step 2 / Payment  
+                {/* step 2 / Payment */}
                 {
                     currentStep == 2 && (
                         <View style={{ paddingHorizontal: 10 }}>
@@ -226,9 +233,9 @@ const ConfirmationScreen = () => {
                     )
                 }
 
-                 // step 3 / Place Order
+                {/* step 3 / Place Order */}
                 {
-                    currentStep === 3 && selectedOption === "cash" && (
+                    currentStep === 3 && selectedPaymentOption === "cash" && (
                         <View style={{ marginHorizontal: 20 }}>
                             <Text style={{ fontSize: 20, fontWeight: "bold" }}>Order Now</Text>
 
@@ -247,7 +254,7 @@ const ConfirmationScreen = () => {
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
                                     <Text style={{ fontSize: 16, fontWeight: "500", color: "gray" }}>Items</Text>
 
-                                    <Text style={{ color: "gray", fontSize: 16 }}>₹total</Text>
+                                    <Text style={{ color: "gray", fontSize: 16 }}>₹{total}</Text>
                                 </View>
 
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
@@ -259,7 +266,7 @@ const ConfirmationScreen = () => {
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, }}>
                                     <Text style={{ fontSize: 20, fontWeight: "bold" }}>Order Total</Text>
 
-                                    <Text style={{ color: "#C60C30", fontSize: 17, fontWeight: "bold" }}>₹total</Text>
+                                    <Text style={{ color: "#C60C30", fontSize: 17, fontWeight: "bold" }}>₹{total}</Text>
                                 </View>
                             </View>
 
@@ -269,7 +276,7 @@ const ConfirmationScreen = () => {
                                 <Text style={{ fontSize: 16, fontWeight: "600", marginTop: 7 }}>Pay on delivery (Cash)</Text>
                             </View>
 
-                            <Pressable onPress={handlePlaceOrder} style={{ backgroundColor: "#FFC72C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginTop: 20, }}>
+                            <Pressable onPress={() => handlePlaceOrder()} style={{ backgroundColor: "#FFC72C", padding: 10, borderRadius: 20, justifyContent: "center", alignItems: "center", marginTop: 20, }}>
                                 <Text>Place your order</Text>
                             </Pressable>
                         </View>
