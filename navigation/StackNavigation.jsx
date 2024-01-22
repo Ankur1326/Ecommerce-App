@@ -37,7 +37,8 @@ const StackNavigation = () => {
           tabBarIcon: ({ focused }) => focused ? (<Ionicons name="home" size={24} color="#008E97" />) : (<Ionicons name="home-outline" size={24} color="black" />),
         }} />
 
-        <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: "Profile", tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" }, headerShown: false, tabBarIcon: ({ focused }) => focused ? (<FontAwesome5 name="user-alt" size={24} color="#008E97" />) : (<FontAwesome5 name="user" size={24} color="black" />),
+        <Tab.Screen name="Profile" component={ProfileScreen} options={{
+          tabBarLabel: "Profile", tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" }, tabBarIcon: ({ focused }) => focused ? (<Ionicons name="person" size={24} color="#008E97" />) : (<FontAwesome5 name="user" size={24} color="black" />),
         }} />
 
 

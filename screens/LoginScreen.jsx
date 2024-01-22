@@ -19,10 +19,12 @@ import { useNavigation } from "@react-navigation/native"
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -38,10 +40,6 @@ const LoginScreen = () => {
     }
     checkLoginStatus();
   }, [])
-
-
-
-
 
   const loginHandler = async () => {
     const user = {
@@ -81,6 +79,10 @@ const LoginScreen = () => {
     }
   }
 
+  // if (!loading) {
+  //   return (<SplashScreen />)
+  // }
+  
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}

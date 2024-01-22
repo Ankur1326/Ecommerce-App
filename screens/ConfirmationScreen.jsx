@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import axios from "axios";
@@ -8,6 +8,8 @@ import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigation } from "@react-navigation/native"
 import { cleanCart } from '../redux/CartReducer';
+
+import RazorpayCheckout from "react-native-razorpay"
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -45,13 +47,12 @@ const ConfirmationScreen = () => {
     const [selectedPaymentOption, setSelectedPaymentOption] = useState("")
 
     const cart = useSelector((state) => state.cart.cart)
-    console.log(cart);
     const total = cart?.map((item) => item.price * item.quantity).reduce((curr, prev) => curr + prev, 0);
 
-    console.log("total : ", total);
 
     const navigation = useNavigation()
     const dispatch = useDispatch()
+
     const handlePlaceOrder = async () => {
         try {
             const response = await axios.post(
@@ -61,11 +62,11 @@ const ConfirmationScreen = () => {
 
             if (response.status === 200) {
                 navigation.navigate("Order")
-                dispatch(cleanCart)
+                dispatch(cleanCart())
                 console.log(response.data.message);
             }
             else {
-              console.log("error creating order ", response.data.message);
+                console.log("error creating order ", response.data.message);
             }
 
 
@@ -76,10 +77,50 @@ const ConfirmationScreen = () => {
 
     }
 
+    const pay = async () => {
+        try {
+            var options = {
+                description: 'Credits towards consultation',
+                // image: 'https://i.imgur.com/3g7nmJC.jpg',
+                currency: 'INR',
+                name: 'Acme Corp',
+                key: 'rzp_test_MV5bnImbMoGCES',
+                amount: total * 100,
+                // order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
+                prefill: {
+                    email: 'gaurav.kumar@example.com',
+                    contact: '9191919191',
+                    name: 'Gaurav Kumar'
+                },
+                theme: { color: '#53a20e' }
+            }
+
+            const data = await RazorpayCheckout.open(options)
+            console.log("data : ", data);
+
+            const response = await axios.post(
+                `http://192.168.43.207:8000/order`,
+                { userId: userIdFromToken, cartItem: cart, shippingAddress: selectedAddress, paymentMethod: selectedPaymentOption, totalPrice: total }
+            )
+
+            if (response.status === 200) {
+                navigation.navigate("Order")
+                dispatch(cleanCart())
+                console.log(response.data.message);
+            }
+            else {
+                console.log("error creating order ", response.data.message);
+            }
+
+        } catch (error) {
+            console.log("error while pay payment : ", error);
+        }
+    }
+
     return (
         <SafeAreaView style={{ backgroundColor: "#f5f5f5" }} >
             <ScrollView>
-                <StatusBar backgroundColor="#00b5b0" />
+                {/* <StatusBar backgroundColor="#00b5b0" /> */}
                 <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40, borderBottomWidth: 5.6, marginBottom: 15, borderBottomColor: "#bababa" }}>
                     <View
                         style={{
@@ -90,7 +131,7 @@ const ConfirmationScreen = () => {
                         }}
                     >
                         {steps?.map((step, index) => (
-                            <View style={{ justifyContent: "center", alignItems: "center" }}>
+                            <Pressable onPress={() => setCurrentStep(index)} style={{ justifyContent: "center", alignItems: "center" }}>
                                 {index > 0 && (
                                     <View
                                         style={[
@@ -129,7 +170,7 @@ const ConfirmationScreen = () => {
                                 <Text style={{ textAlign: "center", marginTop: 8 }}>
                                     {step.title}
                                 </Text>
-                            </View>
+                            </Pressable>
                         ))}
                     </View>
                 </View>
@@ -237,7 +278,19 @@ const ConfirmationScreen = () => {
 
                                     <Text>Cash on Delivery</Text>
                                 </Pressable>
-                                <Pressable onPress={() => setSelectedPaymentOption("card")} style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, flexDirection: "row", alignItems: "center", gap: 7, marginTop: 12, }}>
+                                <Pressable onPress={() => {
+                                    setSelectedPaymentOption("card")
+                                    Alert.alert("UPI/Debit Card", "Pay Online", [
+                                        {
+                                            text: "Cancel",
+                                            onPress: () => console.log("Cancel is Pressed")
+                                        },
+                                        {
+                                            text: "OK",
+                                            onPress: () => pay()
+                                        },
+                                    ])
+                                }} style={{ backgroundColor: "white", padding: 8, borderColor: "#D0D0D0", borderWidth: 1, flexDirection: "row", alignItems: "center", gap: 7, marginTop: 12, }}>
                                     {
                                         selectedPaymentOption == "card" ? (
                                             <FontAwesome5 name="dot-circle" size={24} color="#008397" />

@@ -238,7 +238,7 @@ app.post("/order", async (req, res) => {
 });
 
 
-// get the user profile
+// endpoint to get the user profile
 app.get("/profile/:userId", async (req, res) => {
   try {
     // get the userId form url
@@ -263,9 +263,9 @@ app.get("/profile/:userId", async (req, res) => {
 });
 
 
-// endpoint to get the all orders
 
 // http://10.0.2.2:8000/order
+// endpoint to get the all orders
 app.get("/orders/:userId", async(req, res) => {
   try {
     const userId = req.params.userId
