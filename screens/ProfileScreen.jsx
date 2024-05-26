@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
+import { Image, StyleSheet, Text, View, ScrollView, Pressable, ActivityIndicator } from 'react-native'
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation } from "@react-navigation/native"
 import { Ionicons, AntDesign } from '@expo/vector-icons';
@@ -44,7 +44,7 @@ const ProfileScreen = () => {
       ),
     });
   }, []);
-  
+
   const [user, setUser] = useState();
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -161,7 +161,9 @@ const ProfileScreen = () => {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {loading ? (
-          <Text>Loading...</Text>
+          <View style={{flex: 1, alignItems: 'center', height: 200, justifyContent: 'center', width: 300 }} >
+            <ActivityIndicator color="#00CED1" size="large" />
+          </View>
         ) : orders.length > 0 ? (
           orders.map((order) => (
             <Pressable

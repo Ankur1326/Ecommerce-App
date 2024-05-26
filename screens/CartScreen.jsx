@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View, TextInput, Image } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View, TextInput, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,10 +12,10 @@ import { useNavigation } from "@react-navigation/native"
 const CartScreen = () => {
   const navigation = useNavigation()
   const cart = useSelector((state) => state.cart.cart)
-  console.log(cart);
+  // console.log("cart : ", cart);
   const total = cart?.map((item) => item.price * item.quantity).reduce((curr, prev) => curr + prev, 0);
 
-  console.log("total : ", total);
+  // console.log("total : ", total);
 
   const dispatch = useDispatch()
   const handleDecreaseQuantity = (item) => {
@@ -52,9 +52,17 @@ const CartScreen = () => {
             <Text style={{ fontSize: 20, fontWeight: 700 }} >{total}</Text>
           </View>
           <Text style={{ color: "gray" }} >EMI Available <Text style={{ color: "#0066b2" }} >Details</Text></Text>
-          <Pressable onPress={() => navigation.navigate("Confirm")} style={{ backgroundColor: "#f7b539", paddingHorizontal: 10, paddingVertical: 15, borderRadius: 7 }}>
-            <Text style={{ textAlign: 'center', fontWeight: 600 }}>Proceed to Buy ( {cart.length > 0 ? cart.length : "0"} item )</Text>
-          </Pressable>
+          {
+            cart.length
+              ?
+              <Pressable onPress={() => navigation.navigate("Confirm")} style={{ backgroundColor: "#f7b539", paddingHorizontal: 10, paddingVertical: 15, borderRadius: 7 }}>
+                <Text style={{ textAlign: 'center', fontWeight: 600 }}>Proceed to Buy ( {cart.length > 0 ? cart.length : "0"} item )</Text>
+              </Pressable>
+              :
+              <Pressable onPress={() => Alert.alert("Empty cart", "Please add product to cart before 'Proceed to Buy' ")} style={{ backgroundColor: "gray", paddingHorizontal: 10, paddingVertical: 15, borderRadius: 7 }}>
+                <Text style={{ textAlign: 'center', fontWeight: 600 }}>Proceed to Buy ( {cart.length > 0 ? cart.length : "0"} item )</Text>
+              </Pressable>
+          }
 
           <View style={{ borderBottomWidth: 1, borderBottomColor: "gray", marginTop: 20, marginBottom: 10 }} ></View>
 

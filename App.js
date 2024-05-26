@@ -14,6 +14,7 @@ export default function App() {
           <StackNavigation />
           <ModalPortal />
         </UserContext>
+        {/* <Text>Hiiii</Text> */}
       </Provider>
     </>
   );

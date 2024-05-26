@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { useNavigation } from "@react-navigation/native"
 import { cleanCart } from '../redux/CartReducer';
 
-import RazorpayCheckout from "react-native-razorpay"
+import RazorpayCheckout from 'react-native-razorpay';
 
 const ConfirmationScreen = () => {
     const steps = [
@@ -69,7 +69,6 @@ const ConfirmationScreen = () => {
                 console.log("error creating order ", response.data.message);
             }
 
-
         } catch (error) {
             Alert.alert("Error while place your order")
             console.log("Error while place your order", error);
@@ -79,14 +78,14 @@ const ConfirmationScreen = () => {
 
     const pay = async () => {
         try {
-            var options = {
+            let options = {
                 description: 'Credits towards consultation',
-                // image: 'https://i.imgur.com/3g7nmJC.jpg',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ5FJOm2p0GJ65ccxW5h_egLrVhm8v4s0o1g&s',
                 currency: 'INR',
-                name: 'Acme Corp',
+                name: 'Ankur Swami',
                 key: 'rzp_test_MV5bnImbMoGCES',
                 amount: total * 100,
-                // order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
+                order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
                 prefill: {
                     email: 'gaurav.kumar@example.com',
                     contact: '9191919191',
@@ -95,22 +94,27 @@ const ConfirmationScreen = () => {
                 theme: { color: '#53a20e' }
             }
 
-            const data = await RazorpayCheckout.open(options)
-            console.log("data : ", data);
+            // const data = await RazorpayCheckout.open(options)
+            RazorpayCheckout.open(options).then((data) => {
+                console.log(data);
+            }).catch((error) => {
+                console.log("error :", error)
+            })
+            // console.log("data : ", data);
 
-            const response = await axios.post(
-                `http://192.168.43.207:8000/order`,
-                { userId: userIdFromToken, cartItem: cart, shippingAddress: selectedAddress, paymentMethod: selectedPaymentOption, totalPrice: total }
-            )
+            // const response = await axios.post(
+            //     `http://192.168.43.207:8000/order`,
+            //     { userId: userIdFromToken, cartItem: cart, shippingAddress: selectedAddress, paymentMethod: selectedPaymentOption, totalPrice: total }
+            // )
 
-            if (response.status === 200) {
-                navigation.navigate("Order")
-                dispatch(cleanCart())
-                console.log(response.data.message);
-            }
-            else {
-                console.log("error creating order ", response.data.message);
-            }
+            // if (response.status === 200) {
+            //     navigation.navigate("Order")
+            //     dispatch(cleanCart())
+            //     console.log(response.data.message);
+            // }
+            // else {
+            //     console.log("error creating order ", response.data.message);
+            // }
 
         } catch (error) {
             console.log("error while pay payment : ", error);
@@ -131,7 +135,7 @@ const ConfirmationScreen = () => {
                         }}
                     >
                         {steps?.map((step, index) => (
-                            <Pressable onPress={() => setCurrentStep(index)} style={{ justifyContent: "center", alignItems: "center" }}>
+                            <Pressable key={step.title} onPress={() => setCurrentStep(index)} style={{ justifyContent: "center", alignItems: "center" }}>
                                 {index > 0 && (
                                     <View
                                         style={[

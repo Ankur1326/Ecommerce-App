@@ -1,7 +1,6 @@
 import { StyleSheet, TextInput, Text, View, Pressable, Platform, ScrollView, FlatList, Image } from 'react-native'
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 
-import { SliderBox } from 'react-native-image-slider-box';
 import axios from "axios"
 import ProductItem from '../components/ProductItem';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -14,7 +13,7 @@ import { UserType } from '../UserContext';
 import jwt_decode from "jwt-decode"
 
 import { SafeAreaView } from "react-native-safe-area-context";
-
+// import { SliderBox } from 'react-native-image-slider-box';
 
 const HomeScreen = () => {
   const [products, setProducts] = useState([])
@@ -261,7 +260,7 @@ const HomeScreen = () => {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: "white" }} >
+      <SafeAreaView  >
         <ScrollView>
 
           {/* search ;bar */}
@@ -301,12 +300,12 @@ const HomeScreen = () => {
                 <Text style={{ textAlign: "center", fontSize: 12, fontWeight: "500", marginTop: 5 }}>{item.name}</Text>
               </Pressable>
             }
-            keyExtractor={list.id}
+            keyExtractor={(item) => item.id}
             horizontal showsHorizontalScrollIndicator={false}
           />
 
           {/* SliderBox Images   */}
-          <SliderBox
+          {/* <SliderBox
             images={images}
             // sliderBoxHeight={200}
             autoplay
@@ -316,7 +315,7 @@ const HomeScreen = () => {
             // paginationBoxVerticalPadding={20}
             circleLoop
             ImageComponentStyle={{ width: "100%" }}
-          ></SliderBox>
+          ></SliderBox> */}
 
           {/* Trending Deals of the week  */}
           <Text style={{ marginTop: 8, fontSize: 18, fontWeight: 700, marginLeft: 10 }}>Trending Deals of the week</Text>
@@ -498,6 +497,9 @@ const HomeScreen = () => {
   )
 }
 
-export default HomeScreen
+const styles = StyleSheet.create({
+  placeholderStyles: {
+  }
+})
 
-const styles = StyleSheet.create({})
+export default HomeScreen

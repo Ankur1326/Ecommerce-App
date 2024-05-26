@@ -1,26 +1,26 @@
-const app = express();
-const port = 8000;
-
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import cors from "cors";
-
-app.use(cors());
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+import dotenv from 'dotenv';
+// const port = 8000;
 
 import jwt from "jsonwebtoken";
 import { User } from "./models/user.model.js";
 import { Order } from "./models/order.model.js";
 
+const app = express();
+dotenv.config();
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 // import { jwtDecode } from "jwt-decode";
 
 mongoose
   .connect(
-    "mongodb+srv://ecommerce:ecommerce@cluster0.g8qsifj.mongodb.net/ecommerce",
+    `${process.env.MONGO_URI}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -33,9 +33,11 @@ mongoose
     console.log("Error connecting to MongoDb", err);
   });
 
+const port = process.env.PORT || 6000
 app.listen(port, () => {
-  console.log("Server is running on port 8000");
+  console.log("Server is running on port", `${port}`);
 });
+
 
 // set endpoint for register user
 app.post("/register", async (req, res) => {
@@ -266,19 +268,19 @@ app.get("/profile/:userId", async (req, res) => {
 
 // http://10.0.2.2:8000/order
 // endpoint to get the all orders
-app.get("/orders/:userId", async(req, res) => {
+app.get("/orders/:userId", async (req, res) => {
   try {
     const userId = req.params.userId
-    const orders = await Order.find({user: userId}).populate("user")
+    const orders = await Order.find({ user: userId }).populate("user")
 
     console.log("orders : ", orders);
-    if (!orders || orders.length === 0 ) {
-      return res.status(404).json({message: "No orders found"})
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" })
     }
 
-    return res.status(200).json({orders})
-    
+    return res.status(200).json({ orders })
+
   } catch (error) {
-    return res.status(500).json({message: "Error while getting all orders"})
+    return res.status(500).json({ message: "Error while getting all orders" })
   }
-} )
+})

@@ -2,9 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import LoginScreen from "../screens/LoginScreen";
-import RegisterScreen from "../screens/RegisterScreen";
-import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +9,9 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CartScreen from "../screens/CartScreen";
 import ProductInfoScreen from "../screens/ProductInfoScreen";
@@ -20,34 +19,38 @@ import AddAddressScreen from "../screens/AddAddressScreen";
 import AddressScreen from "../screens/AddressScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
+import { useSelector } from "react-redux";
 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const StackNavigation = () => {
+  const cart = useSelector((state) => state.cart.cart)
+
 
   function BottomTabs() {
     return (
       <Tab.Navigator>
         <Tab.Screen name="Home" component={HomeScreen} options={{
           tabBarLabel: "Home",
-          tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" },
+          tabBarLabelStyle: ({ focused, color }) => focused ? { color: "#008E97", } : { color: "black" },
           headerShown: false,
-          tabBarIcon: ({ focused }) => focused ? (<Ionicons name="home" size={24} color="#008E97" />) : (<Ionicons name="home-outline" size={24} color="black" />),
+          tabBarIcon: ({ focused, size }) => focused ? (<Ionicons name="home" size={size} color="#008E97" />) : (<Ionicons name="home-outline" size={size} color="black" />),
         }} />
 
         <Tab.Screen name="Profile" component={ProfileScreen} options={{
-          tabBarLabel: "Profile", tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" }, tabBarIcon: ({ focused }) => focused ? (<Ionicons name="person" size={24} color="#008E97" />) : (<FontAwesome5 name="user" size={24} color="black" />),
+          tabBarLabel: "Profile", tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" }, tabBarIcon: ({ focused, size }) => focused ? (<Ionicons name="person" size={size} color="#008E97" />) : (<FontAwesome5 name="user" size={size} color="black" />),
         }} />
 
-
-        <Tab.Screen name="Cart" component={CartScreen} options={{
-          tabBarLabel: "Cart",
-          tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97" } : { color: "black" },
-          headerShown: false,
-          tabBarIcon: ({ focused }) => focused ? (<Ionicons name="cart" size={24} color="#008E97" />) : (<AntDesign name="shoppingcart" size={24} color="black" />),
-        }} />
+        <Tab.Screen name="Cart" component={CartScreen}
+          options={{
+            tabBarLabel: "Cart",
+            tabBarBadge: cart.length > 0 ? cart.length : null,
+            tabBarLabelStyle: ({ focused }) => focused ? { color: "#008E97", } : { color: "black" },
+            headerShown: false,
+            tabBarIcon: ({ focused, size }) => focused ? (<Ionicons name="cart" size={size} color="#008E97" />) : (<AntDesign name="shoppingcart" size={size} color="black" />),
+          }} />
       </Tab.Navigator>
     )
   }
@@ -70,5 +73,3 @@ const StackNavigation = () => {
 };
 
 export default StackNavigation;
-
-const styles = StyleSheet.create({});
