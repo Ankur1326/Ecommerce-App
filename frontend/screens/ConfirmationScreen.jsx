@@ -85,21 +85,28 @@ const ConfirmationScreen = () => {
                 name: 'Ankur Swami',
                 key: 'rzp_test_MV5bnImbMoGCES',
                 amount: total * 100,
-                order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
+                order_id: 'order_DslnoIgkIDL8Zt',
                 prefill: {
                     email: 'gaurav.kumar@example.com',
                     contact: '9191919191',
-                    name: 'Gaurav Kumar'
+                    name: 'Gaurav Kumar',
                 },
                 theme: { color: '#53a20e' }
             }
 
+            
             // const data = await RazorpayCheckout.open(options)
-            RazorpayCheckout.open(options).then((data) => {
-                console.log(data);
-            }).catch((error) => {
-                console.log("error :", error)
-            })
+            if (RazorpayCheckout && RazorpayCheckout.open) {
+                RazorpayCheckout.open(options)
+                    .then((data) => {
+                        console.log(data);
+                    })
+                    .catch((error) => {
+                        console.log("error :", error);
+                    });
+            } else {
+                console.log("RazorpayCheckout.open is not available");
+            }
             // console.log("data : ", data);
 
             // const response = await axios.post(

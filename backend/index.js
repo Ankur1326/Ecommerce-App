@@ -1,17 +1,22 @@
+import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import cors from "cors";
-import dotenv from 'dotenv';
+import Razorpay from "razorpay";
+
+
 // const port = 8000;
+dotenv.config({
+  path: ".env",
+});
 
 import jwt from "jsonwebtoken";
-import { User } from "./models/user.model.js";
-import { Order } from "./models/order.model.js";
+import { User } from "./src/models/user.model.js";
+import { Order } from "./src/models/order.model.js";
 
 const app = express();
-dotenv.config();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -38,6 +43,17 @@ app.listen(port, () => {
   console.log("Server is running on port", `${port}`);
 });
 
+
+// console.log(process.env.RAZERPAY_API_KEY_ID);
+export const instance = new Razorpay({
+  key_id: `${process.env.RAZERPAY_API_KEY_ID}`,
+  key_secret: `${process.env.RAZERPAY_API_KEY_SECRET}`,
+});
+
+
+import paymentRoutes from './src/routes/payment.routes.js'
+
+app.use('/api/v1/payments', paymentRoutes)
 
 // set endpoint for register user
 app.post("/register", async (req, res) => {
