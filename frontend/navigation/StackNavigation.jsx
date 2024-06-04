@@ -21,7 +21,6 @@ import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
 import { useSelector } from "react-redux";
 
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -51,6 +50,7 @@ const StackNavigation = () => {
             headerShown: false,
             tabBarIcon: ({ focused, size }) => focused ? (<Ionicons name="cart" size={size} color="#008E97" />) : (<AntDesign name="shoppingcart" size={size} color="black" />),
           }} />
+
       </Tab.Navigator>
     )
   }

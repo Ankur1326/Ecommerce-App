@@ -281,8 +281,6 @@ app.get("/profile/:userId", async (req, res) => {
   }
 });
 
-
-
 // http://10.0.2.2:8000/order
 // endpoint to get the all orders
 app.get("/orders/:userId", async (req, res) => {
