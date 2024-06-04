@@ -20,6 +20,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.json());
 
 // import { jwtDecode } from "jwt-decode";
 
@@ -27,7 +28,7 @@ mongoose
   .connect(
     `${process.env.MONGO_URI}`,
     {
-      useNewUrlParser: true,
+      // useNewUrlParser: true,
       useUnifiedTopology: true,
     }
   )

@@ -1,4 +1,6 @@
 import { instance as razorpay } from '../../index.js';
+import Stripe from 'stripe'
+const stripe = Stripe('sk_test_51PKx14SIhQBv3dCOfuuhuAj4ELvCUzrfjowRCaMhTpZaIa7HBoWjE7vyGVk24vs5AsXlBt7COwqAtXhJWBbSwrsz00lKR6RUHP');
 
 export const checkout = async (req, res) => {
     try {
@@ -14,4 +16,24 @@ export const checkout = async (req, res) => {
     } catch (error) {
         console.log("Error while creating order : ", error);
     }
-} 
+}
+
+export const createPaymentOIntent = async (req, res) => {
+    const { amount } = req.body;
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency: 'inr',
+            payment_method_types: ['UPI'], // Specify UPI as the payment method
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        });
+        console.log(paymentIntent);
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+}
